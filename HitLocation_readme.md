@@ -1,4 +1,4 @@
-# Roll20  
+# Roll20 : Weighted hit location system
 
 A Roll20 API script that generates realistic, weighted hit locations for tabletop RPGs.  
 This script simulates strikes to different regions of the body, factoring in target size, rarity, and facing (front or back).  
