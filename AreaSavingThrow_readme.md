@@ -102,8 +102,11 @@ This version replaces the deprecated JSON parsing roller with a **safe inline-ro
 - Replaces  
   ```js
   JSON.parse(results[0].content).total
-with
-results[0].inlinerolls[0].results.total
+
+  WITH
+
+  results[0].inlinerolls[0].results.total
+
 
 - Adds automatic coercion for state values stored as strings (e.g., "true" → true).
 - Protects against missing player objects and missing hp attributes.
