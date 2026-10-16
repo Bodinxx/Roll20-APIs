@@ -1,0 +1,275 @@
+<div class="sheet-cyberpunk">
+  <div class="sheet-header">
+    <div class="sheet-brand"><strong>CP-2020</strong><div><b>INTERLOCK SYSTEM</b><small>Character Sheet</small></div></div>
+    <nav class="sheet-tabs">
+      <input class="sheet-tab-radio" type="radio" name="attr_tab" value="character" id="tab-character" checked="checked">
+      <label for="tab-character">Character</label>
+      <input class="sheet-tab-radio" type="radio" name="attr_tab" value="skills" id="tab-skills">
+      <label for="tab-skills">Skills</label>
+      <input class="sheet-tab-radio" type="radio" name="attr_tab" value="combat" id="tab-combat">
+      <label for="tab-combat">Combat</label>
+      <input class="sheet-tab-radio" type="radio" name="attr_tab" value="gear" id="tab-gear">
+      <label for="tab-gear">Cyberware & Gear</label>
+      <input class="sheet-tab-radio" type="radio" name="attr_tab" value="lifepath" id="tab-lifepath">
+      <label for="tab-lifepath">Lifepath</label>
+    </nav>
+  </div>
+
+  <div class="sheet-pages">
+    <section class="sheet-page sheet-page-character">
+      <div class="sheet-column">
+        <div class="sheet-card">
+          <h2>Character Profile</h2>
+          <div class="sheet-field-grid">
+            <label>Handle<input type="text" name="attr_Handle"></label>
+            <label>Role<input type="text" name="attr_Role"></label>
+            <label>Reputation<input type="number" name="attr_Reputation" value="0"></label>
+            <label>Eddies (eb)<input type="number" name="attr_Money" value="0"></label>
+          </div>
+          <div class="sheet-field-grid sheet-three">
+            <label>IP Earned<input type="number" name="attr_IP_Earned" value="0"></label>
+            <label>IP Spent<input type="number" name="attr_IP_Spent" value="0"></label>
+            <label>IP Remaining<input type="number" name="attr_IP_Remaining" value="0" readonly></label>
+          </div>
+          <div class="sheet-init">
+            <b>INITIATIVE</b><label>Bonus<input type="number" name="attr_Init_Bonus" value="0"></label>
+            <button type="roll" value="&{template:cyber} {{name=Initiative}} {{character=@{Handle}}} {{result=[[1d10!! + @{Ref} + @{Combat_Sense} + @{Init_Bonus} + ?{Modifier|0} &{tracker}]]}}">Roll Init</button>
+          </div>
+          <label class="sheet-wide">Notes / Background<textarea name="attr_Notes" rows="3"></textarea></label>
+        </div>
+
+        <div class="sheet-card">
+          <h2>Core Statistics <span class="sheet-caption">BASE / TEMP / CURRENT</span></h2>
+          <div class="sheet-stat-grid">
+            <div class="sheet-stat-row"><button type="roll" value="&{template:cyber} {{name=INT}} {{character=@{Handle}}} {{result=[[1d10!! + @{Int} + ?{Modifier|0}]]}}">INT</button><input type="number" name="attr_Int_Base" value="0" title="Base"><input type="number" name="attr_Int_Temp" value="0" title="Temporary modifier"><input type="number" name="attr_Int" value="0" readonly title="Wound modified"></div>
+            <div class="sheet-stat-row"><button type="roll" value="&{template:cyber} {{name=REF}} {{character=@{Handle}}} {{result=[[1d10!! + @{Ref} + ?{Modifier|0}]]}}">REF</button><input type="number" name="attr_Ref_Base" value="0" title="Base"><input type="number" name="attr_Ref_Temp" value="0" title="Temporary modifier"><input type="number" name="attr_Ref" value="0" readonly title="Wound modified"></div>
+            <div class="sheet-stat-row"><button type="roll" value="&{template:cyber} {{name=TECH}} {{character=@{Handle}}} {{result=[[1d10!! + @{Tech} + ?{Modifier|0}]]}}">TECH</button><input type="number" name="attr_Tech_Base" value="0" title="Base"><input type="number" name="attr_Tech_Temp" value="0" title="Temporary modifier"><input type="number" name="attr_Tech" value="0" readonly title="Current"></div>
+            <div class="sheet-stat-row"><button type="roll" value="&{template:cyber} {{name=COOL}} {{character=@{Handle}}} {{result=[[1d10!! + @{Cool} + ?{Modifier|0}]]}}">COOL</button><input type="number" name="attr_Cool_Base" value="0" title="Base"><input type="number" name="attr_Cool_Temp" value="0" title="Temporary modifier"><input type="number" name="attr_Cool" value="0" readonly title="Wound modified"></div>
+            <div class="sheet-stat-row"><button type="roll" value="&{template:cyber} {{name=ATTR}} {{character=@{Handle}}} {{result=[[1d10!! + @{Attr} + ?{Modifier|0}]]}}">ATTR</button><input type="number" name="attr_Attr_Base" value="0" title="Base"><input type="number" name="attr_Attr_Temp" value="0" title="Temporary modifier"><input type="number" name="attr_Attr" value="0" readonly title="Current"></div>
+            <div class="sheet-stat-row"><button type="roll" value="&{template:cyber} {{name=LUCK}} {{character=@{Handle}}} {{result=[[1d10!! + @{Luck} + ?{Modifier|0}]]}}">LUCK</button><input type="number" name="attr_Luck_Base" value="0" title="Base"><input type="number" name="attr_Luck_Temp" value="0" title="Temporary modifier"><input type="number" name="attr_Luck" value="0" readonly title="Current"></div>
+            <div class="sheet-stat-row"><button type="roll" value="&{template:cyber} {{name=MA}} {{character=@{Handle}}} {{result=[[1d10!! + @{Ma} + ?{Modifier|0}]]}}">MA</button><input type="number" name="attr_Ma_Base" value="0" title="Base"><input type="number" name="attr_Ma_Temp" value="0" title="Temporary modifier"><input type="number" name="attr_Ma" value="0" readonly title="Current"></div>
+            <div class="sheet-stat-row"><button type="roll" value="&{template:cyber} {{name=BODY}} {{character=@{Handle}}} {{result=[[1d10!! + @{Body} + ?{Modifier|0}]]}}">BODY</button><input type="number" name="attr_Body_Base" value="0" title="Base"><input type="number" name="attr_Body_Temp" value="0" title="Temporary modifier"><input type="number" name="attr_Body" value="0" readonly title="Current"></div>
+            <div class="sheet-stat-row"><button type="roll" value="&{template:cyber} {{name=EMP}} {{character=@{Handle}}} {{result=[[1d10!! + @{Emp} + ?{Modifier|0}]]}}">EMP</button><input type="number" name="attr_Humanity" value="0" title="Current humanity"><input type="number" name="attr_Humanity_Loss" value="0" title="Humanity loss"><input type="number" name="attr_Emp" value="0" readonly title="Current EMP"></div>
+          </div>
+          <div class="sheet-derived">
+            <label>RUN<input type="number" name="attr_Run" value="0" readonly></label>
+            <label>LEAP<input type="number" name="attr_Leap" value="0" readonly></label>
+            <label>LIFT<input type="number" name="attr_Lift" value="0" readonly></label>
+            <label>MAX LIFT<input type="number" name="attr_Max_Lift" value="0" readonly></label>
+            <label>SAVE<input type="number" name="attr_Save" value="0" readonly></label>
+            <label>BTM<input type="number" name="attr_Btm" value="0" readonly></label>
+          </div>
+        </div>
+
+        <div class="sheet-card sheet-wounds">
+          <div class="sheet-card-heading"><h2>Health & Wound Track</h2><label>Total Wounds<input type="number" name="attr_Total_Wounds" value="0" readonly></label></div>
+          <input type="text" class="sheet-wound-status" name="attr_Wound_Status" value="Light (-0)" readonly>
+          <div class="sheet-wound-grid">
+            <label>LIGHT <span>STUN 0</span><input type="checkbox" name="attr_Wound_1" value="1"><input type="checkbox" name="attr_Wound_2" value="1"><input type="checkbox" name="attr_Wound_3" value="1"><input type="checkbox" name="attr_Wound_4" value="1"></label>
+            <label>SERIOUS <span>STUN 1</span><input type="checkbox" name="attr_Wound_5" value="1"><input type="checkbox" name="attr_Wound_6" value="1"><input type="checkbox" name="attr_Wound_7" value="1"><input type="checkbox" name="attr_Wound_8" value="1"></label>
+            <label>CRITICAL <span>STUN 2</span><input type="checkbox" name="attr_Wound_9" value="1"><input type="checkbox" name="attr_Wound_10" value="1"><input type="checkbox" name="attr_Wound_11" value="1"><input type="checkbox" name="attr_Wound_12" value="1"></label>
+            <label>MORTAL 0 <span>STUN 3</span><input type="checkbox" name="attr_Wound_13" value="1"><input type="checkbox" name="attr_Wound_14" value="1"><input type="checkbox" name="attr_Wound_15" value="1"><input type="checkbox" name="attr_Wound_16" value="1"></label>
+            <label>MORTAL 1 <span>STUN 4</span><input type="checkbox" name="attr_Wound_17" value="1"><input type="checkbox" name="attr_Wound_18" value="1"><input type="checkbox" name="attr_Wound_19" value="1"><input type="checkbox" name="attr_Wound_20" value="1"></label>
+            <label>MORTAL 2+ <span>STUN 5+</span><input type="checkbox" name="attr_Wound_21" value="1"><input type="checkbox" name="attr_Wound_22" value="1"><input type="checkbox" name="attr_Wound_23" value="1"><input type="checkbox" name="attr_Wound_24" value="1"></label>
+          </div>
+        </div>
+      </div>
+      <aside class="sheet-column">
+        <div class="sheet-card">
+          <h2>Movement & Initiative</h2>
+          <p class="sheet-help">Roll checks from the Skills tab. Initiative includes REF, Combat Sense, and your bonus.</p>
+          <button type="roll" class="sheet-action" value="&{template:cyber} {{name=Initiative}} {{character=@{Handle}}} {{result=[[1d10!! + @{Ref} + @{Combat_Sense} + @{Init_Bonus} + ?{Modifier|0} &{tracker}]]}}">Roll Initiative</button>
+          <label>Wound modifier<input type="number" name="attr_Wound_Modifier" value="0" readonly></label>
+        </div>
+        <div class="sheet-card">
+          <h2>Quick Checks</h2>
+          <button type="roll" class="sheet-action" value="&{template:cyber} {{name=Save}} {{character=@{Handle}}} {{result=[[1d10!! + @{Save} + ?{Modifier|0}]]}}">Death Save</button>
+          <button type="roll" class="sheet-action" value="&{template:cyber} {{name=Luck}} {{character=@{Handle}}} {{result=[[1d10!! + @{Luck} + ?{Modifier|0}]]}}">Luck Check</button>
+        </div>
+      </aside>
+    </section>
+
+    <section class="sheet-page sheet-page-skills">
+      <div class="sheet-card">
+        <h2>Skills & Special Abilities</h2>
+        <p class="sheet-help">Add skills with the repeating-row control. Set the governing stat value and skill level, then roll 1d10 + both values.</p>
+        <div class="sheet-skill-head"><span>SKILL</span><span>STAT</span><span>STAT VALUE</span><span>LEVEL</span><span>IP</span><span>CHIP</span><span>ROLL</span></div>
+        <fieldset class="repeating_skills">
+          <div class="sheet-skill-row">
+            <input type="text" name="attr_Skill_Name" placeholder="Skill name">
+            <select name="attr_Skill_Stat"><option>INT</option><option>REF</option><option>TECH</option><option>COOL</option><option>ATTR</option><option>LUCK</option><option>MA</option><option>BODY</option><option>EMP</option></select>
+            <input type="number" name="attr_Skill_Stat_Value" value="0">
+            <input type="number" name="attr_Skill_Level" value="0">
+            <input type="number" name="attr_Skill_IP" value="1">
+            <input type="checkbox" name="attr_Skill_Chipped" value="1">
+            <button type="roll" value="&{template:cyber} {{name=@{Skill_Name}}} {{character=@{Handle}}} {{result=[[1d10!! + @{Skill_Stat_Value} + @{Skill_Level} + ?{Modifier|0}]]}}">Roll</button>
+          </div>
+        </fieldset>
+        <div class="sheet-card sheet-inner-card">
+          <h3>Core Skills Quick Rolls</h3>
+          <div class="sheet-quick-rolls">
+            <button type="roll" value="&{template:cyber} {{name=Awareness/Notice}} {{character=@{Handle}}} {{result=[[1d10!! + @{Int} + ?{Skill Level|0} + ?{Modifier|0}]]}}">Awareness / Notice</button>
+            <button type="roll" value="&{template:cyber} {{name=Athletics}} {{character=@{Handle}}} {{result=[[1d10!! + @{Ref} + ?{Skill Level|0} + ?{Modifier|0}]]}}">Athletics</button>
+            <button type="roll" value="&{template:cyber} {{name=Handguns}} {{character=@{Handle}}} {{result=[[1d10!! + @{Ref} + ?{Skill Level|0} + ?{Modifier|0}]]}}">Handguns</button>
+            <button type="roll" value="&{template:cyber} {{name=First Aid}} {{character=@{Handle}}} {{result=[[1d10!! + @{Tech} + ?{Skill Level|0} + ?{Modifier|0}]]}}">First Aid</button>
+            <button type="roll" value="&{template:cyber} {{name=Streetwise}} {{character=@{Handle}}} {{result=[[1d10!! + @{Cool} + ?{Skill Level|0} + ?{Modifier|0}]]}}">Streetwise</button>
+            <button type="roll" value="&{template:cyber} {{name=Human Perception}} {{character=@{Handle}}} {{result=[[1d10!! + @{Emp} + ?{Skill Level|0} + ?{Modifier|0}]]}}">Human Perception</button>
+          </div>
+        </div>
+        <div class="sheet-card sheet-inner-card">
+          <h3>Special Abilities</h3>
+          <div class="sheet-field-grid">
+            <label>Combat Sense<input type="number" name="attr_Combat_Sense" value="0"></label>
+            <label>Other Special Ability<input type="text" name="attr_Special_Ability"></label>
+            <label>Ability Level<input type="number" name="attr_Special_Ability_Level" value="0"></label>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sheet-page sheet-page-combat">
+      <div class="sheet-card">
+        <h2>Weapons Inventory & Attack Rolls</h2>
+        <p class="sheet-help">Record the weapon skill level on each row. Range modifiers follow the prototype’s close/medium/long/extreme bands.</p>
+        <fieldset class="repeating_weapons">
+          <div class="sheet-weapon-row">
+            <label>WEAPON<input type="text" name="attr_Weapon_Name"></label>
+            <label>SKILL<input type="text" name="attr_Weapon_Skill" value="Handguns"></label>
+            <label>LVL<input type="number" name="attr_Weapon_Skill_Level" value="0"></label>
+            <label>WA<input type="number" name="attr_Weapon_Accuracy" value="0"></label>
+            <label>DAMAGE<input type="text" name="attr_Weapon_Damage"></label>
+            <label>AMMO<input type="text" name="attr_Weapon_Ammo"></label>
+            <label>ROF<input type="number" name="attr_Weapon_ROF" value="1"></label>
+            <label>MISC<input type="number" name="attr_Weapon_Misc" value="0"></label>
+            <button type="roll" value="&{template:cyber} {{name=@{Weapon_Name} — attack}} {{character=@{Handle}}} {{result=[[1d10!! + @{Ref} + @{Weapon_Skill_Level} + @{Weapon_Accuracy} + ?{Range|Close,0|Medium,-2|Long,-4|Extreme,-6} + @{Weapon_Misc} + ?{Modifier|0}]]}}">Attack</button>
+            <button type="roll" value="&{template:cyber} {{name=@{Weapon_Name} — autofire}} {{character=@{Handle}}} {{result=[[1d10!! + @{Ref} + @{Weapon_Skill_Level} + @{Weapon_Accuracy} + floor(@{Weapon_ROF}/10) + ?{Range|Close,2|Medium,-2|Long,-4|Extreme,-6} + @{Weapon_Misc} + ?{Modifier|0}]]}}">Auto</button>
+          </div>
+        </fieldset>
+      </div>
+      <div class="sheet-card">
+        <h2>Hit Location & Armour Layering</h2>
+        <p class="sheet-help">Enter armour SP for each layer. Roll the two dice separately; the hit location table is shown for quick reference.</p>
+        <button type="roll" class="sheet-action" value="&{template:cyber} {{name=Hit Location}} {{character=@{Handle}}} {{body=[[1d10]]}} {{location=[[1d10]]}}">Roll Hit Location</button>
+        <div class="sheet-hit-grid">
+          <div><b>HEAD</b><span>1–3 Skull · 4 Right Eye · 5 Left Eye · 6–8 Face · 9–10 Neck</span></div>
+          <div><b>TORSO</b><span>1–5 Chest · 6–8 Stomach · 9–10 Hip</span></div>
+          <div><b>ARMS</b><span>1–2 Shoulder · 3–5 Upper Arm · 6 Elbow · 7–9 Forearm · 10 Hand</span></div>
+          <div><b>LEGS</b><span>1 Groin · 2 Hip · 3–6 Thigh · 7 Knee · 8–9 Shin · 10 Foot</span></div>
+        </div>
+        <fieldset class="repeating_armor">
+          <div class="sheet-armor-row"><input type="text" name="attr_Armor_Location" placeholder="Location"><label>Layer 1 SP<input type="number" name="attr_Armor_Layer_1" value="0"></label><label>Layer 2 SP<input type="number" name="attr_Armor_Layer_2" value="0"></label><label>Layer 3 SP<input type="number" name="attr_Armor_Layer_3" value="0"></label></div>
+        </fieldset>
+      </div>
+      <div class="sheet-card">
+        <h2>Martial Arts & Fighting Styles</h2>
+        <p class="sheet-help">Roll a maneuver using 1d10 + REF + style level + modifier.</p>
+        <fieldset class="repeating_martial">
+          <div class="sheet-martial-row"><input type="text" name="attr_Martial_Style" placeholder="Style"><input type="number" name="attr_Martial_Level" value="0" title="Skill level"><input type="number" name="attr_Martial_Modifier" value="0" title="Maneuver modifier"><button type="roll" value="&{template:cyber} {{name=@{Martial_Style} maneuver}} {{character=@{Handle}}} {{result=[[1d10!! + @{Ref} + @{Martial_Level} + @{Martial_Modifier} + ?{Modifier|0}]]}}">Roll</button></div>
+        </fieldset>
+      </div>
+    </section>
+
+    <section class="sheet-page sheet-page-gear">
+      <div class="sheet-card">
+        <h2>Cyberware & Modifications</h2>
+        <fieldset class="repeating_cyberware">
+          <div class="sheet-gear-row"><label>NAME<input type="text" name="attr_Cyberware_Name"></label><label>EFFECT<input type="text" name="attr_Cyberware_Effect"></label><label>COST (eb)<input type="number" name="attr_Cyberware_Cost" value="0"></label><label>HUM LOSS<input type="number" name="attr_Cyberware_Humanity_Loss" value="0"></label></div>
+        </fieldset>
+        <label class="sheet-total-loss">Total Humanity Loss<input type="number" name="attr_Humanity_Loss" value="0"></label>
+      </div>
+      <div class="sheet-card">
+        <h2>General Gear & Equipment</h2>
+        <fieldset class="repeating_gear">
+          <div class="sheet-gear-row"><label>ITEM<input type="text" name="attr_Gear_Name"></label><label>COST (eb)<input type="number" name="attr_Gear_Cost" value="0"></label><label>MONTHLY<input type="checkbox" name="attr_Gear_Monthly" value="1"></label><label>NOTES<input type="text" name="attr_Gear_Notes"></label></div>
+        </fieldset>
+      </div>
+    </section>
+
+    <section class="sheet-page sheet-page-lifepath">
+      <div class="sheet-card">
+        <h2>Lifepath & Personal History</h2>
+        <div class="sheet-field-grid">
+          <label>Clothes<input type="text" name="attr_LP_Clothes"></label>
+          <label>Hairstyle<input type="text" name="attr_LP_Hair"></label>
+          <label>Affectations / Quirks<input type="text" name="attr_LP_Affectations"></label>
+          <label>Ethnicity / Origin<input type="text" name="attr_LP_Ethnicity"></label>
+          <label>Primary Language<input type="text" name="attr_LP_Language"></label>
+          <label>Family Ranking<input type="text" name="attr_LP_Family_Rank"></label>
+          <label>Parents' Status<input type="text" name="attr_LP_Parents"></label>
+          <label>Family Tragedy<input type="text" name="attr_LP_Tragedy"></label>
+          <label>Motivation<input type="text" name="attr_LP_Motivation"></label>
+          <label>Feelings About People<input type="text" name="attr_LP_People"></label>
+          <label>Most Valued Possession<input type="text" name="attr_LP_Possession"></label>
+        </div>
+        <h3>Chronological Life Events</h3>
+        <fieldset class="repeating_lifeevents">
+          <div class="sheet-event-row"><label>AGE / YEAR<input type="number" name="attr_Event_Age" value="0"></label><label>EVENT<input type="text" name="attr_Event_Description"></label></div>
+        </fieldset>
+      </div>
+      <div class="sheet-card">
+        <h2>Backstory & Notes</h2>
+        <textarea class="sheet-backstory" name="attr_LP_Backstory" rows="18"></textarea>
+      </div>
+    </section>
+  </div>
+</div>
+
+<rolltemplate class="sheet-rolltemplate-cyber">
+  <div class="sheet-template">
+    <div class="sheet-template-title">{{name}}</div>
+    {{#character}}<div class="sheet-template-character">{{character}}</div>{{/character}}
+    <div class="sheet-template-result">{{result}}</div>
+    {{#body}}<div>Body roll: {{body}}</div>{{/body}}{{#location}}<div>Location roll: {{location}}</div>{{/location}}
+  </div>
+</rolltemplate>
+
+<script type="text/worker">
+const woundAttrs = Array.from({ length: 24 }, (_, index) => `Wound_${index + 1}`);
+const statAttrs = ["Int", "Ref", "Tech", "Cool", "Attr", "Luck", "Ma", "Body"];
+
+function updateSheet() {
+  getAttrs([...woundAttrs, ...statAttrs.flatMap(stat => [`${stat}_Base`, `${stat}_Temp`]), ["Humanity", "Humanity_Loss", "IP_Earned", "IP_Spent"]].flat(), values => {
+    const wounds = woundAttrs.reduce((total, attr) => total + (values[attr] === "1" ? 1 : 0), 0);
+    let woundMod = 0;
+    let status = "Light (-0)";
+    if (wounds >= 5 && wounds <= 8) {
+      woundMod = -2;
+      status = "Serious (-2 REF)";
+    } else if (wounds >= 9 && wounds <= 12) {
+      woundMod = -4;
+      status = "Critical (-4 All)";
+    } else if (wounds >= 13 && wounds <= 16) {
+      woundMod = -6;
+      status = "Mortal 0 (-6 All)";
+    } else if (wounds >= 17 && wounds <= 20) {
+      woundMod = -6;
+      status = "Mortal 1 (-6 All)";
+    } else if (wounds >= 21) {
+      woundMod = -6;
+      status = "Mortal 2+ (Comatose)";
+    }
+    const attrs = {
+      Total_Wounds: wounds,
+      Wound_Modifier: woundMod,
+      Wound_Status: status,
+      Humanity_Current: Math.max(0, Number(values.Humanity || 0) - Number(values.Humanity_Loss || 0)),
+      IP_Remaining: Number(values.IP_Earned || 0) - Number(values.IP_Spent || 0)
+    };
+    statAttrs.forEach(stat => {
+      const base = Number(values[`${stat}_Base`] || 0) + Number(values[`${stat}_Temp`] || 0);
+      const penalty = (stat === "Ref" && wounds >= 5) || (wounds >= 9 && ["Int", "Tech", "Cool", "Attr", "Luck", "Ma", "Body", "Ref"].includes(stat)) ? woundMod : 0;
+      attrs[stat] = Math.max(0, base + penalty);
+    });
+    attrs.Emp = Math.floor(attrs.Humanity_Current / 10);
+    attrs.Run = attrs.Ma * 3;
+    attrs.Leap = attrs.Run / 4;
+    attrs.Lift = attrs.Body * 5;
+    attrs.Max_Lift = attrs.Body * 20;
+    attrs.Save = attrs.Body;
+    attrs.Btm = attrs.Body <= 2 ? 0 : attrs.Body <= 4 ? -1 : attrs.Body <= 7 ? -2 : attrs.Body <= 9 ? -3 : attrs.Body <= 10 ? -4 : -5;
+    setAttrs(attrs);
+  });
+}
+
+on("sheet:opened change:Wound_1 change:Wound_2 change:Wound_3 change:Wound_4 change:Wound_5 change:Wound_6 change:Wound_7 change:Wound_8 change:Wound_9 change:Wound_10 change:Wound_11 change:Wound_12 change:Wound_13 change:Wound_14 change:Wound_15 change:Wound_16 change:Wound_17 change:Wound_18 change:Wound_19 change:Wound_20 change:Wound_21 change:Wound_22 change:Wound_23 change:Wound_24 change:Int_Base change:Int_Temp change:Ref_Base change:Ref_Temp change:Tech_Base change:Tech_Temp change:Cool_Base change:Cool_Temp change:Attr_Base change:Attr_Temp change:Luck_Base change:Luck_Temp change:Ma_Base change:Ma_Temp change:Body_Base change:Body_Temp change:Humanity change:Humanity_Loss change:IP_Earned change:IP_Spent", updateSheet);
+</script>
