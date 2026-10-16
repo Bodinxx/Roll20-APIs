@@ -67,10 +67,9 @@
 }
 
 .sheet-tabs {
-  display: flex;
+  display: block;
   flex-wrap: wrap;
-  gap: 3px;
-  padding: 4px;
+  padding: 4px 4px 0;
   background: #09090b;
   border: 1px solid var(--cyber-border);
   border-radius: 5px;
@@ -112,11 +111,11 @@
   gap: 12px;
 }
 
-.sheet-cyberpunk:has(#tab-character:checked) .sheet-page-character,
-.sheet-cyberpunk:has(#tab-skills:checked) .sheet-page-skills,
-.sheet-cyberpunk:has(#tab-combat:checked) .sheet-page-combat,
-.sheet-cyberpunk:has(#tab-gear:checked) .sheet-page-gear,
-.sheet-cyberpunk:has(#tab-lifepath:checked) .sheet-page-lifepath {
+.sheet-tab-radio[value="character"]:checked ~ .sheet-pages .sheet-page-character,
+.sheet-tab-radio[value="skills"]:checked ~ .sheet-pages .sheet-page-skills,
+.sheet-tab-radio[value="combat"]:checked ~ .sheet-pages .sheet-page-combat,
+.sheet-tab-radio[value="gear"]:checked ~ .sheet-pages .sheet-page-gear,
+.sheet-tab-radio[value="lifepath"]:checked ~ .sheet-pages .sheet-page-lifepath {
   display: grid;
 }
 
@@ -592,7 +591,6 @@
   }
 
   .sheet-tab-radio + label {
-    flex: 1 1 30%;
     padding: 7px 5px;
     text-align: center;
   }

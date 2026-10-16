@@ -1,8 +1,9 @@
 <div class="sheet-cyberpunk">
   <div class="sheet-header">
     <div class="sheet-brand"><strong>CP-2020</strong><div><b>INTERLOCK SYSTEM</b><small>Character Sheet</small></div></div>
-    <nav class="sheet-tabs">
-      <input class="sheet-tab-radio" type="radio" name="attr_tab" value="character" id="tab-character" checked="checked">
+  </div>
+  <nav class="sheet-tabs">
+    <input class="sheet-tab-radio" type="radio" name="attr_tab" value="character" id="tab-character" checked="checked">
       <label for="tab-character">Character</label>
       <input class="sheet-tab-radio" type="radio" name="attr_tab" value="skills" id="tab-skills">
       <label for="tab-skills">Skills</label>
@@ -11,9 +12,7 @@
       <input class="sheet-tab-radio" type="radio" name="attr_tab" value="gear" id="tab-gear">
       <label for="tab-gear">Cyberware & Gear</label>
       <input class="sheet-tab-radio" type="radio" name="attr_tab" value="lifepath" id="tab-lifepath">
-      <label for="tab-lifepath">Lifepath</label>
-    </nav>
-  </div>
+    <label for="tab-lifepath">Lifepath</label>
 
   <div class="sheet-pages">
     <section class="sheet-page sheet-page-character">
@@ -49,7 +48,7 @@
             <div class="sheet-stat-row"><button type="roll" value="&{template:cyber} {{name=LUCK}} {{character=@{Handle}}} {{result=[[1d10!! + @{Luck} + ?{Modifier|0}]]}}">LUCK</button><input type="number" name="attr_Luck_Base" value="0" title="Base"><input type="number" name="attr_Luck_Temp" value="0" title="Temporary modifier"><input type="number" name="attr_Luck" value="0" readonly title="Current"></div>
             <div class="sheet-stat-row"><button type="roll" value="&{template:cyber} {{name=MA}} {{character=@{Handle}}} {{result=[[1d10!! + @{Ma} + ?{Modifier|0}]]}}">MA</button><input type="number" name="attr_Ma_Base" value="0" title="Base"><input type="number" name="attr_Ma_Temp" value="0" title="Temporary modifier"><input type="number" name="attr_Ma" value="0" readonly title="Current"></div>
             <div class="sheet-stat-row"><button type="roll" value="&{template:cyber} {{name=BODY}} {{character=@{Handle}}} {{result=[[1d10!! + @{Body} + ?{Modifier|0}]]}}">BODY</button><input type="number" name="attr_Body_Base" value="0" title="Base"><input type="number" name="attr_Body_Temp" value="0" title="Temporary modifier"><input type="number" name="attr_Body" value="0" readonly title="Current"></div>
-            <div class="sheet-stat-row"><button type="roll" value="&{template:cyber} {{name=EMP}} {{character=@{Handle}}} {{result=[[1d10!! + @{Emp} + ?{Modifier|0}]]}}">EMP</button><input type="number" name="attr_Humanity" value="0" title="Current humanity"><input type="number" name="attr_Humanity_Loss" value="0" title="Humanity loss"><input type="number" name="attr_Emp" value="0" readonly title="Current EMP"></div>
+            <div class="sheet-stat-row"><button type="roll" value="&{template:cyber} {{name=EMP}} {{character=@{Handle}}} {{result=[[1d10!! + @{Emp} + ?{Modifier|0}]]}}">HUM / EMP</button><input type="number" name="attr_Humanity" value="0" title="Humanity before cyberware loss"><input type="number" name="attr_Emp" value="0" readonly title="Current EMP"></div>
           </div>
           <div class="sheet-derived">
             <label>RUN<input type="number" name="attr_Run" value="0" readonly></label>
@@ -157,7 +156,7 @@
           <div><b>LEGS</b><span>1 Groin · 2 Hip · 3–6 Thigh · 7 Knee · 8–9 Shin · 10 Foot</span></div>
         </div>
         <fieldset class="repeating_armor">
-          <div class="sheet-armor-row"><input type="text" name="attr_Armor_Location" placeholder="Location"><label>Layer 1 SP<input type="number" name="attr_Armor_Layer_1" value="0"></label><label>Layer 2 SP<input type="number" name="attr_Armor_Layer_2" value="0"></label><label>Layer 3 SP<input type="number" name="attr_Armor_Layer_3" value="0"></label></div>
+          <div class="sheet-armor-row"><input type="text" name="attr_Armor_Location" placeholder="Location"><label>Layer 1 SP<input type="number" name="attr_Armor_Layer_1" value="0"></label><label>Layer 2 SP<input type="number" name="attr_Armor_Layer_2" value="0"></label><label>Layer 3 SP<input type="number" name="attr_Armor_Layer_3" value="0"></label><label>TOTAL SP<input type="number" name="attr_Armor_Total" value="0" readonly></label></div>
         </fieldset>
       </div>
       <div class="sheet-card">
@@ -175,7 +174,7 @@
         <fieldset class="repeating_cyberware">
           <div class="sheet-gear-row"><label>NAME<input type="text" name="attr_Cyberware_Name"></label><label>EFFECT<input type="text" name="attr_Cyberware_Effect"></label><label>COST (eb)<input type="number" name="attr_Cyberware_Cost" value="0"></label><label>HUM LOSS<input type="number" name="attr_Cyberware_Humanity_Loss" value="0"></label></div>
         </fieldset>
-        <label class="sheet-total-loss">Total Humanity Loss<input type="number" name="attr_Humanity_Loss" value="0"></label>
+        <label class="sheet-total-loss">Total Humanity Loss<input type="number" name="attr_Humanity_Loss" value="0" readonly></label>
       </div>
       <div class="sheet-card">
         <h2>General Gear & Equipment</h2>
@@ -212,6 +211,7 @@
       </div>
     </section>
   </div>
+  </nav>
 </div>
 
 <rolltemplate class="sheet-rolltemplate-cyber">
@@ -228,7 +228,10 @@ const woundAttrs = Array.from({ length: 24 }, (_, index) => `Wound_${index + 1}`
 const statAttrs = ["Int", "Ref", "Tech", "Cool", "Attr", "Luck", "Ma", "Body"];
 
 function updateSheet() {
-  getAttrs([...woundAttrs, ...statAttrs.flatMap(stat => [`${stat}_Base`, `${stat}_Temp`]), ["Humanity", "Humanity_Loss", "IP_Earned", "IP_Spent"]].flat(), values => {
+  getSectionIDs("repeating_cyberware", sectionIds => {
+    const cyberwareAttrs = sectionIds.map(id => `repeating_cyberware_${id}_Cyberware_Humanity_Loss`);
+    getAttrs([...woundAttrs, ...statAttrs.flatMap(stat => [`${stat}_Base`, `${stat}_Temp`]), "Humanity", "IP_Earned", "IP_Spent", ...cyberwareAttrs], values => {
+    const humanityLoss = cyberwareAttrs.reduce((total, attr) => total + Number(values[attr] || 0), 0);
     const wounds = woundAttrs.reduce((total, attr) => total + (values[attr] === "1" ? 1 : 0), 0);
     let woundMod = 0;
     let status = "Light (-0)";
@@ -252,7 +255,8 @@ function updateSheet() {
       Total_Wounds: wounds,
       Wound_Modifier: woundMod,
       Wound_Status: status,
-      Humanity_Current: Math.max(0, Number(values.Humanity || 0) - Number(values.Humanity_Loss || 0)),
+      Humanity_Loss: humanityLoss,
+      Humanity_Current: Math.max(0, Number(values.Humanity || 0) - humanityLoss),
       IP_Remaining: Number(values.IP_Earned || 0) - Number(values.IP_Spent || 0)
     };
     statAttrs.forEach(stat => {
@@ -260,7 +264,7 @@ function updateSheet() {
       const penalty = (stat === "Ref" && wounds >= 5) || (wounds >= 9 && ["Int", "Tech", "Cool", "Attr", "Luck", "Ma", "Body", "Ref"].includes(stat)) ? woundMod : 0;
       attrs[stat] = Math.max(0, base + penalty);
     });
-    attrs.Emp = Math.floor(attrs.Humanity_Current / 10);
+    attrs.Emp = Math.max(0, Math.floor(attrs.Humanity_Current / 10) + (wounds >= 9 ? woundMod : 0));
     attrs.Run = attrs.Ma * 3;
     attrs.Leap = attrs.Run / 4;
     attrs.Lift = attrs.Body * 5;
@@ -269,7 +273,22 @@ function updateSheet() {
     attrs.Btm = attrs.Body <= 2 ? 0 : attrs.Body <= 4 ? -1 : attrs.Body <= 7 ? -2 : attrs.Body <= 9 ? -3 : attrs.Body <= 10 ? -4 : -5;
     setAttrs(attrs);
   });
+  });
 }
 
-on("sheet:opened change:Wound_1 change:Wound_2 change:Wound_3 change:Wound_4 change:Wound_5 change:Wound_6 change:Wound_7 change:Wound_8 change:Wound_9 change:Wound_10 change:Wound_11 change:Wound_12 change:Wound_13 change:Wound_14 change:Wound_15 change:Wound_16 change:Wound_17 change:Wound_18 change:Wound_19 change:Wound_20 change:Wound_21 change:Wound_22 change:Wound_23 change:Wound_24 change:Int_Base change:Int_Temp change:Ref_Base change:Ref_Temp change:Tech_Base change:Tech_Temp change:Cool_Base change:Cool_Temp change:Attr_Base change:Attr_Temp change:Luck_Base change:Luck_Temp change:Ma_Base change:Ma_Temp change:Body_Base change:Body_Temp change:Humanity change:Humanity_Loss change:IP_Earned change:IP_Spent", updateSheet);
+function updateArmorTotals() {
+  getSectionIDs("repeating_armor", sectionIds => {
+    sectionIds.forEach(id => {
+      const prefix = `repeating_armor_${id}_Armor_Layer_`;
+      getAttrs([`${prefix}1`, `${prefix}2`, `${prefix}3`], values => {
+        const layers = [`${prefix}1`, `${prefix}2`, `${prefix}3`].map(attr => Number(values[attr]) || 0).filter(value => value > 0).sort((a, b) => b - a);
+        const total = layers.length ? layers[0] + layers.slice(1).reduce((sum, value) => sum + Math.floor(value / 3), 0) : 0;
+        setAttrs({ [`repeating_armor_${id}_Armor_Total`]: total });
+      });
+    });
+  });
+}
+
+on("sheet:opened change:Wound_1 change:Wound_2 change:Wound_3 change:Wound_4 change:Wound_5 change:Wound_6 change:Wound_7 change:Wound_8 change:Wound_9 change:Wound_10 change:Wound_11 change:Wound_12 change:Wound_13 change:Wound_14 change:Wound_15 change:Wound_16 change:Wound_17 change:Wound_18 change:Wound_19 change:Wound_20 change:Wound_21 change:Wound_22 change:Wound_23 change:Wound_24 change:Int_Base change:Int_Temp change:Ref_Base change:Ref_Temp change:Tech_Base change:Tech_Temp change:Cool_Base change:Cool_Temp change:Attr_Base change:Attr_Temp change:Luck_Base change:Luck_Temp change:Ma_Base change:Ma_Temp change:Body_Base change:Body_Temp change:Humanity change:IP_Earned change:IP_Spent change:repeating_cyberware:Cyberware_Humanity_Loss change:repeating_cyberware", updateSheet);
+on("sheet:opened change:repeating_armor change:repeating_armor:Armor_Layer_1 change:repeating_armor:Armor_Layer_2 change:repeating_armor:Armor_Layer_3", updateArmorTotals);
 </script>
