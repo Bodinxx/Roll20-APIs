@@ -67,7 +67,7 @@
 }
 
 .sheet-tabs {
-  display: block;
+  display: flex;
   flex-wrap: wrap;
   padding: 4px 4px 0;
   background: #09090b;
@@ -79,8 +79,10 @@
   display: none !important;
 }
 
-.sheet-tab-radio + label {
-  display: inline-block;
+.sheet-cyberpunk .sheet-tab-radio + label {
+  display: block;
+  flex: 1 1 auto;
+  text-align: center;
   margin: 0;
   padding: 7px 10px;
   color: #a1a1aa;
@@ -102,6 +104,8 @@
 }
 
 .sheet-pages {
+  flex: 0 0 100%;
+  min-width: 0;
   padding: 12px;
 }
 
@@ -193,6 +197,7 @@
 }
 
 .sheet-cyberpunk label > input:not([type="checkbox"]),
+.sheet-cyberpunk label > input[type="number"],
 .sheet-cyberpunk label > select,
 .sheet-cyberpunk label > textarea {
   display: block;
@@ -317,9 +322,13 @@
   text-align: left;
 }
 
-.sheet-stat-row input {
+.sheet-cyberpunk .sheet-stat-row input[type="number"] {
   width: 100%;
   padding: 4px 2px !important;
+}
+
+.sheet-stat-empathy {
+  grid-template-columns: minmax(52px, 1fr) repeat(2, minmax(0, 1fr));
 }
 
 .sheet-derived {
@@ -377,7 +386,7 @@
   gap: 5px;
 }
 
-.sheet-wound-grid > label {
+.sheet-wound-grid > div {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   justify-items: center;
@@ -391,7 +400,7 @@
   text-align: center;
 }
 
-.sheet-wound-grid > label span {
+.sheet-wound-grid > div span {
   grid-column: 1 / -1;
   color: #71717a;
   font-size: 8px;
