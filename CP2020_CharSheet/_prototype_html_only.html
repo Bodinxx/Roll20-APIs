@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyberpunk 2020 Character Sheet Prototype</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            yellow: '#fcee0a',
+                            dark: '#08080a',
+                            card: '#121217',
+                            border: '#2a2a35',
+                            accent: '#ff0055',
+                            cyan: '#00f0ff'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Courier New', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #08080a;
+            color: #f4f4f5;
+            font-family: 'Inter', sans-serif;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #121217;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2a2a35;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #fcee0a;
+        }
+        .cyber-border {
+            border: 1px solid #2a2a35;
+            box-shadow: 0 0 8px rgba(0,0,0,0.4);
+        }
+        .clip-corner {
+            clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-cyber-dark text-slate-100 flex flex-col selection:bg-cyber-yellow selection:text-black text-xs">
+
+    <header class="bg-cyber-card border-b border-cyber-border sticky top-0 z-50">
+        <div class="max-w-[1600px] mx-auto px-3 py-2 flex flex-col sm:flex-row justify-between items-center gap-2">
+            <div class="flex items-center space-x-2">
+                <div class="bg-cyber-yellow text-black font-extrabold px-2.5 py-1 text-base tracking-widest clip-corner">
+                    CP-2020
+                </div>
+                <div>
+                    <h1 class="font-bold text-sm tracking-wide uppercase text-cyber-yellow">INTERLOCK SYSTEM</h1>
+                    <p class="text-[10px] text-slate-400">Character Sheet & Sandbox Prototype</p>
+                </div>
+            </div>
+
+            <div class="flex space-x-2 bg-black/40 p-1 rounded border border-cyber-border">
+                <button onclick="switchTab('sheet')" id="tab-sheet" class="px-3 py-1 text-xs font-semibold rounded transition-all bg-cyber-yellow text-black shadow">
+                    <i class="fa-solid fa-id-card mr-1"></i>Character Sheet
+                </button>
+                <button onclick="switchTab('lifepath')" id="tab-lifepath" class="px-3 py-1 text-xs font-semibold rounded transition-all text-slate-400 hover:text-white hover:bg-white/5">
+                    <i class="fa-solid fa-book-journal-whills mr-1"></i>Lifepath & History
+                </button>
+            </div>
+
+            <div class="flex items-center space-x-2">
+                <button onclick="saveCharacter()" class="bg-zinc-800 hover:bg-zinc-700 text-cyber-yellow px-2.5 py-1.5 rounded text-[11px] font-bold border border-cyber-border transition">
+                    <i class="fa-solid fa-floppy-disk mr-1"></i>Save
+                </button>
+                <button onclick="resetCharacter()" class="bg-zinc-800 hover:bg-red-950 text-red-400 px-2.5 py-1.5 rounded text-[11px] font-bold border border-cyber-border transition">
+                    <i class="fa-solid fa-trash-can mr-1"></i>Reset
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-[1600px] mx-auto w-full p-2 md:p-4 space-y-3">
+
+        <div id="section-sheet" class="grid grid-cols-1 lg:grid-cols-12 gap-3">
+            
+            <!-- LEFT COLUMN: Profile, STATs, Derived, Wound Track -->
+            <div class="lg:col-span-4 space-y-3">
+                
+                <div class="bg-cyber-card p-3 rounded cyber-border space-y-2">
+                    <h2 class="text-[11px] font-bold uppercase text-cyber-yellow tracking-wider border-b border-cyber-border pb-1">Character Profile</h2>
+                    
+                    <div class="grid grid-cols-4 gap-1.5">
+                        <div>
+                            <label class="text-[9px] text-slate-400 block mb-0.5">Handle</label>
+                            <input type="text" id="char-handle" value="V-Zero" class="w-full bg-black border border-cyber-border rounded px-1.5 py-1 text-xs font-semibold focus:border-cyber-yellow outline-none">
+                        </div>
+                        <div>
+                            <label class="text-[9px] text-slate-400 block mb-0.5">Role</label>
+                            <input type="text" id="char-role" value="Solo" class="w-full bg-black border border-cyber-border rounded px-1.5 py-1 text-xs focus:border-cyber-yellow outline-none">
+                        </div>
+                        <div>
+                            <label class="text-[9px] text-slate-400 block mb-0.5">Reputation</label>
+                            <input type="number" id="char-rep" value="5" class="w-full bg-black border border-cyber-border rounded px-1.5 py-1 text-xs font-bold text-cyber-yellow text-center focus:border-cyber-yellow outline-none">
+                        </div>
+                        <div>
+                            <label class="text-[9px] text-slate-400 block mb-0.5">Eddies (eb)</label>
+                            <input type="number" id="char-money" value="14500" class="w-full bg-black border border-cyber-yellow text-cyber-yellow rounded px-1.5 py-1 text-xs font-bold text-center focus:border-white outline-none">
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-1.5">
+                        <div>
+                            <label class="text-[9px] text-slate-400 block mb-0.5">IP Earned</label>
+                            <input type="number" id="ip-earned" value="2400" oninput="updateIPRemaining()" class="w-full bg-black border border-cyber-border rounded px-1 py-1 text-xs font-bold text-slate-200 text-center focus:border-cyber-yellow outline-none">
+                        </div>
+                        <div>
+                            <label class="text-[9px] text-slate-400 block mb-0.5">IP Spent</label>
+                            <input type="number" id="ip-spent" value="2150" oninput="updateIPRemaining()" class="w-full bg-black border border-cyber-border rounded px-1 py-1 text-xs font-bold text-slate-200 text-center focus:border-cyber-yellow outline-none">
+                        </div>
+                        <div>
+                            <label class="text-[9px] text-slate-400 block mb-0.5">IP Remain</label>
+                            <input type="number" id="ip-remain" value="250" readonly class="w-full bg-black/80 border border-cyber-border rounded px-1 py-1 text-xs font-bold text-cyan-400 text-center">
+                        </div>
+                    </div>
+
+                    <div class="bg-black/40 p-2 rounded border border-cyber-border flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-[11px] font-bold text-cyber-yellow">INITIATIVE</span>
+                            <div class="flex items-center space-x-1" title="Cyberware/Speedware Bonus">
+                                <span class="text-[9px] text-slate-400">Bonus:</span>
+                                <input type="number" id="init-bonus" value="3" class="w-10 bg-black border border-cyber-border rounded px-1 py-0.5 text-xs text-center font-bold text-cyan-300">
+                            </div>
+                        </div>
+                        <button onclick="rollInitiative()" class="bg-cyber-yellow text-black hover:bg-white px-2.5 py-1 rounded text-[11px] font-bold transition flex items-center gap-1">
+                            <i class="fa-solid fa-dice"></i> Roll Init
+                        </button>
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] text-slate-400 block mb-0.5">Notes / Background</label>
+                        <textarea id="char-notes" rows="1" class="w-full bg-black border border-cyber-border rounded px-2 py-1 text-[11px] focus:border-cyber-yellow outline-none resize-none">Ex-militech operative turned street merc.</textarea>
+                    </div>
+                </div>
+
+                <div class="bg-cyber-card p-3 rounded cyber-border space-y-2">
+                    <div class="flex justify-between items-center border-b border-cyber-border pb-1">
+                        <h2 class="text-[11px] font-bold uppercase text-cyber-yellow tracking-wider">Core Statistics (STAT)</h2>
+                        <span class="text-[9px] text-slate-400" title="Base / Wounded">BASE / MOD</span>
+                    </div>
+
+                    <div id="stats-container" class="space-y-1.5">
+                        <!-- Populated via JS -->
+                    </div>
+
+                    <div class="grid grid-cols-4 gap-1.5 pt-2 border-t border-cyber-border text-center">
+                        <div class="bg-black/50 p-1 rounded border border-cyber-border">
+                            <span class="text-[9px] text-slate-400 block">RUN</span>
+                            <span id="derived-run" class="text-xs font-bold text-cyber-yellow">21</span>
+                        </div>
+                        <div class="bg-black/50 p-1 rounded border border-cyber-border">
+                            <span class="text-[9px] text-slate-400 block">LEAP</span>
+                            <span id="derived-leap" class="text-xs font-bold text-cyber-yellow">5.25</span>
+                        </div>
+                        <div class="bg-black/50 p-1 rounded border border-cyber-border" title="Basic Lift / Max Lift">
+                            <span class="text-[9px] text-slate-400 block">LIFT (kg)</span>
+                            <span id="derived-lift" class="text-xs font-bold text-cyan-300">35 / 140</span>
+                        </div>
+                        <div class="bg-black/50 p-1 rounded border border-cyber-border">
+                            <span class="text-[9px] text-slate-400 block">SAVE / BTM</span>
+                            <span id="derived-save" class="text-xs font-bold text-red-400">7 / -2</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-cyber-card p-3 rounded cyber-border space-y-2">
+                    <div class="flex justify-between items-center border-b border-cyber-border pb-1">
+                        <h2 class="text-[11px] font-bold uppercase text-cyber-yellow tracking-wider">Health & Wound Track</h2>
+                        <div class="flex items-center space-x-1">
+                            <span class="text-[10px] text-slate-300 font-semibold">Total Wounds:</span>
+                            <input type="number" id="total-wounds-input" value="0" min="0" max="40" oninput="updateWoundTrackFromTotal(this.value)" class="w-12 bg-black border border-cyber-yellow text-cyber-yellow text-xs px-1 py-0.5 rounded text-center font-bold">
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center bg-black/60 p-1.5 rounded border border-cyber-border text-[11px]">
+                        <span class="text-slate-300">Wound Penalty Modifier</span>
+                        <input type="text" id="wound-status-text" value="Light (-0)" readonly class="bg-black border border-cyber-border text-cyber-yellow px-2 py-0.5 rounded text-right font-bold w-36 text-xs">
+                    </div>
+
+                    <div class="space-y-1.5 text-[9px]">
+                        <!-- Row 1: Light to Mortal 1 -->
+                        <div class="grid grid-cols-5 gap-1 text-center">
+                            <div class="bg-black/40 border border-cyber-border p-1 rounded">
+                                <div class="font-bold text-slate-300 mb-0.5">LIGHT</div>
+                                <div class="grid grid-cols-4 gap-0.5">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                </div>
+                                <div class="text-[7px] text-slate-500 mt-0.5">STUN 0</div>
+                            </div>
+                            <div class="bg-black/40 border border-cyber-border p-1 rounded">
+                                <div class="font-bold text-yellow-400 mb-0.5" title="-2 REF">SERIOUS</div>
+                                <div class="grid grid-cols-4 gap-0.5">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                </div>
+                                <div class="text-[7px] text-slate-500 mt-0.5">STUN 1</div>
+                            </div>
+                            <div class="bg-black/40 border border-cyber-border p-1 rounded">
+                                <div class="font-bold text-orange-400 mb-0.5" title="-4 All">CRITICAL</div>
+                                <div class="grid grid-cols-4 gap-0.5">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                </div>
+                                <div class="text-[7px] text-slate-500 mt-0.5">STUN 2</div>
+                            </div>
+                            <div class="bg-black/40 border border-cyber-border p-1 rounded">
+                                <div class="font-bold text-red-500 mb-0.5">MORTAL 0</div>
+                                <div class="grid grid-cols-4 gap-0.5">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                </div>
+                                <div class="text-[7px] text-slate-500 mt-0.5">STUN 3</div>
+                            </div>
+                            <div class="bg-black/40 border border-cyber-border p-1 rounded">
+                                <div class="font-bold text-red-600 mb-0.5">MORTAL 1</div>
+                                <div class="grid grid-cols-4 gap-0.5">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                </div>
+                                <div class="text-[7px] text-slate-500 mt-0.5">STUN 4</div>
+                            </div>
+                        </div>
+
+                        <!-- Row 2: Mortal 2 to Mortal 6 -->
+                        <div class="grid grid-cols-5 gap-1 text-center">
+                            <div class="bg-black/40 border border-cyber-border p-1 rounded">
+                                <div class="font-bold text-red-700 mb-0.5">MORTAL 2</div>
+                                <div class="grid grid-cols-4 gap-0.5">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                </div>
+                                <div class="text-[7px] text-slate-500 mt-0.5">STUN 5</div>
+                            </div>
+                            <div class="bg-black/40 border border-cyber-border p-1 rounded">
+                                <div class="font-bold text-red-700 mb-0.5">MORTAL 3</div>
+                                <div class="grid grid-cols-4 gap-0.5">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                </div>
+                                <div class="text-[7px] text-slate-500 mt-0.5">STUN 6</div>
+                            </div>
+                            <div class="bg-black/40 border border-cyber-border p-1 rounded">
+                                <div class="font-bold text-red-800 mb-0.5">MORTAL 4</div>
+                                <div class="grid grid-cols-4 gap-0.5">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                </div>
+                                <div class="text-[7px] text-slate-500 mt-0.5">STUN 7</div>
+                            </div>
+                            <div class="bg-black/40 border border-cyber-border p-1 rounded">
+                                <div class="font-bold text-red-900 mb-0.5">MORTAL 5</div>
+                                <div class="grid grid-cols-4 gap-0.5">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                </div>
+                                <div class="text-[7px] text-slate-500 mt-0.5">STUN 8</div>
+                            </div>
+                            <div class="bg-black/40 border border-cyber-border p-1 rounded">
+                                <div class="font-bold text-red-950 mb-0.5">MORTAL 6</div>
+                                <div class="grid grid-cols-4 gap-0.5">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                    <input type="checkbox" class="wound-box accent-yellow-400 h-2.5 w-2.5" onchange="recalculateWounds()">
+                                </div>
+                                <div class="text-[7px] text-slate-500 mt-0.5">STUN 9</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: Tab-Viewed Panel (Skills, Combat, Gear) -->
+            <div class="lg:col-span-8 space-y-3">
+                
+                <div class="flex space-x-2 bg-cyber-card p-1 rounded border border-cyber-border">
+                    <button onclick="switchRightTab('skills')" id="r-tab-skills" class="flex-1 py-1.5 text-xs font-bold rounded transition-all bg-cyber-yellow text-black shadow">
+                        <i class="fa-solid fa-graduation-cap mr-1"></i>Skills & Special Abilities
+                    </button>
+                    <button onclick="switchRightTab('combat')" id="r-tab-combat" class="flex-1 py-1.5 text-xs font-bold rounded transition-all text-slate-400 hover:text-white hover:bg-white/5">
+                        <i class="fa-solid fa-crosshairs mr-1"></i>Combat, Weapons & Armour
+                    </button>
+                    <button onclick="switchRightTab('gear')" id="r-tab-gear" class="flex-1 py-1.5 text-xs font-bold rounded transition-all text-slate-400 hover:text-white hover:bg-white/5">
+                        <i class="fa-solid fa-boxes-stacked mr-1"></i>Cyberware & Gear
+                    </button>
+                </div>
+
+                <div id="rtab-content-skills" class="space-y-3">
+                    <div class="bg-cyber-card p-3 rounded cyber-border space-y-3">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-cyber-border pb-2 gap-2">
+                            <div>
+                                <h2 class="text-xs font-bold uppercase text-cyber-yellow tracking-wider">CP2020 Complete Skills & Special Abilities (3-Column Flow)</h2>
+                                <p class="text-[10px] text-slate-400">Click any skill name to roll (1d10 + Stat + Skill Lvl). Check 'Chip' for chipped skillware.</p>
+                            </div>
+                            <button onclick="openAddSkillModal()" class="bg-cyber-yellow text-black font-bold px-2.5 py-1 rounded text-[11px] hover:bg-white transition flex items-center gap-1">
+                                <i class="fa-solid fa-plus"></i> Add Skill
+                            </button>
+                        </div>
+
+                        <!-- 3-Column Layout Matching Excel Mockup Layout -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            
+                            <!-- Column 1: Special Abilities, Attractiveness, Body, Intelligence -->
+                            <div class="space-y-3">
+                                <div id="box-special" class="bg-black/40 border border-cyber-border rounded p-2 space-y-1">
+                                    <div class="flex justify-between items-center border-b border-cyber-border pb-1">
+                                        <h3 class="text-[11px] font-bold uppercase text-cyber-yellow">Special Abilities</h3>
+                                        <span class="text-[9px] text-slate-400">LVL / TOT</span>
+                                    </div>
+                                    <div id="skills-special-container" class="space-y-0.5 max-h-36 overflow-y-auto pr-1"></div>
+                                </div>
+
+                                <div id="box-attr" class="bg-black/40 border border-cyber-border rounded p-2 space-y-1">
+                                    <div class="flex justify-between items-center border-b border-cyber-border pb-1">
+                                        <h3 class="text-[11px] font-bold uppercase text-cyber-yellow">Attractiveness Skills (ATTR)</h3>
+                                        <span class="text-[9px] text-slate-400">LVL / TOT</span>
+                                    </div>
+                                    <div id="skills-attr-container" class="space-y-0.5 max-h-36 overflow-y-auto pr-1"></div>
+                                </div>
+
+                                <div id="box-body" class="bg-black/40 border border-cyber-border rounded p-2 space-y-1">
+                                    <div class="flex justify-between items-center border-b border-cyber-border pb-1">
+                                        <h3 class="text-[11px] font-bold uppercase text-cyber-yellow">Body Skills (BODY)</h3>
+                                        <span class="text-[9px] text-slate-400">LVL / TOT</span>
+                                    </div>
+                                    <div id="skills-body-container" class="space-y-0.5 max-h-36 overflow-y-auto pr-1"></div>
+                                </div>
+
+                                <div id="box-int" class="bg-black/40 border border-cyber-border rounded p-2 space-y-1">
+                                    <div class="flex justify-between items-center border-b border-cyber-border pb-1">
+                                        <h3 class="text-[11px] font-bold uppercase text-cyber-yellow">Intelligence Skills (INT)</h3>
+                                        <span class="text-[9px] text-slate-400">LVL / TOT</span>
+                                    </div>
+                                    <div id="skills-int-container" class="space-y-0.5 max-h-52 overflow-y-auto pr-1"></div>
+                                </div>
+                            </div>
+
+                            <!-- Column 2: Cool & Reflex -->
+                            <div class="space-y-3">
+                                <div id="box-cool" class="bg-black/40 border border-cyber-border rounded p-2 space-y-1">
+                                    <div class="flex justify-between items-center border-b border-cyber-border pb-1">
+                                        <h3 class="text-[11px] font-bold uppercase text-cyber-yellow">Cool Skills (COOL)</h3>
+                                        <span class="text-[9px] text-slate-400">LVL / TOT</span>
+                                    </div>
+                                    <div id="skills-cool-container" class="space-y-0.5 max-h-52 overflow-y-auto pr-1"></div>
+                                </div>
+
+                                <div id="box-ref" class="bg-black/40 border border-cyber-border rounded p-2 space-y-1">
+                                    <div class="flex justify-between items-center border-b border-cyber-border pb-1">
+                                        <h3 class="text-[11px] font-bold uppercase text-cyber-yellow">Reflex Skills (REF)</h3>
+                                        <span class="text-[9px] text-slate-400">LVL / TOT</span>
+                                    </div>
+                                    <div id="skills-ref-container" class="space-y-0.5 max-h-52 overflow-y-auto pr-1"></div>
+                                </div>
+                            </div>
+
+                            <!-- Column 3: Empathy & Technical -->
+                            <div class="space-y-3">
+                                <div id="box-emp" class="bg-black/40 border border-cyber-border rounded p-2 space-y-1">
+                                    <div class="flex justify-between items-center border-b border-cyber-border pb-1">
+                                        <h3 class="text-[11px] font-bold uppercase text-cyber-yellow">Empathy Skills (EMP)</h3>
+                                        <span class="text-[9px] text-slate-400">LVL / TOT</span>
+                                    </div>
+                                    <div id="skills-emp-container" class="space-y-0.5 max-h-36 overflow-y-auto pr-1"></div>
+                                </div>
+
+                                <div id="box-tech" class="bg-black/40 border border-cyber-border rounded p-2 space-y-1">
+                                    <div class="flex justify-between items-center border-b border-cyber-border pb-1">
+                                        <h3 class="text-[11px] font-bold uppercase text-cyber-yellow">Technical Skills (TECH)</h3>
+                                        <span class="text-[9px] text-slate-400">LVL / TOT</span>
+                                    </div>
+                                    <div id="skills-tech-container" class="space-y-0.5 max-h-52 overflow-y-auto pr-1"></div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div id="rtab-content-combat" class="space-y-3 hidden">
+                    
+                    <div class="bg-cyber-card p-3 rounded cyber-border space-y-3">
+                        <div class="flex justify-between items-center border-b border-cyber-border pb-2">
+                            <div>
+                                <h2 class="text-xs font-bold uppercase text-cyber-yellow tracking-wider">Expanded Hit Location & Armour Layering (CP2020 pp. 101-102)</h2>
+                                <p class="text-[10px] text-slate-400">Enter SP for up to 3 armour layers; total SP follows official layering rules (highest layer + 1/3 of secondary layers).</p>
+                            </div>
+                            <button onclick="rollHitLocation()" class="bg-cyber-yellow text-black text-[11px] font-bold px-2.5 py-1 rounded hover:bg-white transition">
+                                <i class="fa-solid fa-dice mr-1"></i> Roll 2-Dice Location
+                            </button>
+                        </div>
+
+                        <div id="hit-locations-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
+                            <!-- Populated via JS -->
+                        </div>
+                    </div>
+
+                    <div class="bg-cyber-card p-3 rounded cyber-border space-y-3">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-cyber-border pb-2 gap-2">
+                            <div class="flex items-center space-x-3">
+                                <h2 class="text-xs font-bold uppercase text-cyber-yellow tracking-wider">Weapons Inventory & Attack Rolls</h2>
+                                <div class="flex items-center space-x-1.5 bg-black/60 px-2 py-1 rounded border border-cyber-border">
+                                    <label class="text-[10px] text-slate-400">Target Range:</label>
+                                    <select id="combat-range-select" class="bg-black text-cyber-yellow text-xs font-bold border border-cyber-border rounded px-1.5 py-0.5 outline-none">
+                                        <option value="close">Close (0 - 6m: +0)</option>
+                                        <option value="medium">Medium (6 - 50m: -2)</option>
+                                        <option value="long">Long (50 - 100m: -4)</option>
+                                        <option value="extreme">Extreme (100m+: -6)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button onclick="addWeaponRow()" class="bg-zinc-800 hover:bg-cyber-yellow hover:text-black text-cyber-yellow px-2 py-1 rounded text-[11px] font-bold border border-cyber-border transition">
+                                <i class="fa-solid fa-plus mr-1"></i> Add Weapon
+                            </button>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-[11px]">
+                                <thead>
+                                    <tr class="text-slate-400 border-b border-cyber-border">
+                                        <th class="py-1 px-1">Weapon Name</th>
+                                        <th class="py-1 px-1 w-24" title="Governing Skill">Skill</th>
+                                        <th class="py-1 px-1 w-12" title="Type code">Type</th>
+                                        <th class="py-1 px-1 w-10" title="Weapon Accuracy">WA</th>
+                                        <th class="py-1 px-1 w-12" title="Concealability">Conc</th>
+                                        <th class="py-1 px-1 w-12" title="Availability">Avail</th>
+                                        <th class="py-1 px-1">Damage</th>
+                                        <th class="py-1 px-1 w-14">Ammo</th>
+                                        <th class="py-1 px-1 w-10" title="Max Magazine Shots">Shots</th>
+                                        <th class="py-1 px-1 w-10" title="Rate of Fire">ROF</th>
+                                        <th class="py-1 px-1 w-10" title="Reliability">Rel</th>
+                                        <th class="py-1 px-1 w-12" title="Range in meters">Rng</th>
+                                        <th class="py-1 px-1 w-10 text-center" title="Misc Bonus/Penalty">Misc</th>
+                                        <th class="py-1 px-1 w-16 text-center" title="Full Auto attack toggle">Full Auto</th>
+                                        <th class="py-1 px-1 w-16 text-center">Attack</th>
+                                        <th class="py-1 px-1 w-8">Act</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="weapons-tbody" class="divide-y divide-zinc-900">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="bg-cyber-card p-3 rounded cyber-border space-y-3">
+                        <div class="flex justify-between items-center border-b border-cyber-border pb-2">
+                            <div>
+                                <h2 class="text-xs font-bold uppercase text-cyber-yellow tracking-wider">Martial Arts & Fighting Styles</h2>
+                                <p class="text-[10px] text-slate-400">Click the 🎲 dice icon on any maneuver value to roll (1d10 + REF + Skill Lvl + Maneuver Mod).</p>
+                            </div>
+                            <button onclick="addFightingStyleRow()" class="bg-zinc-800 hover:bg-cyber-yellow hover:text-black text-cyber-yellow px-2 py-1 rounded text-[11px] font-bold border border-cyber-border transition">
+                                <i class="fa-solid fa-plus mr-1"></i> Add Style
+                            </button>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-center text-[11px]">
+                                <thead>
+                                    <tr class="text-slate-400 border-b border-cyber-border text-left">
+                                        <th class="py-1 px-1 w-28">Style (Skill)</th>
+                                        <th class="py-1 px-1">Strike</th>
+                                        <th class="py-1 px-1">Punch</th>
+                                        <th class="py-1 px-1">Kick</th>
+                                        <th class="py-1 px-1">Disarm</th>
+                                        <th class="py-1 px-1">Sweep</th>
+                                        <th class="py-1 px-1">Block</th>
+                                        <th class="py-1 px-1">Dodge</th>
+                                        <th class="py-1 px-1">Grapple</th>
+                                        <th class="py-1 px-1">Throw</th>
+                                        <th class="py-1 px-1">Hold</th>
+                                        <th class="py-1 px-1">Choke</th>
+                                        <th class="py-1 px-1">Escape</th>
+                                        <th class="py-1 px-1">Ram</th>
+                                        <th class="py-1 px-1 w-8">Act</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="fighting-styles-tbody" class="divide-y divide-zinc-900">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div id="rtab-content-gear" class="space-y-3 hidden">
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-3">
+                        
+                        <div class="bg-cyber-card p-3 rounded cyber-border space-y-3">
+                            <div class="flex justify-between items-center border-b border-cyber-border pb-2">
+                                <h2 class="text-xs font-bold uppercase text-cyber-yellow tracking-wider">Cyberware & Modifications</h2>
+                                <button onclick="addCyberwareRow()" class="bg-zinc-800 hover:bg-cyber-yellow hover:text-black text-cyber-yellow px-2 py-1 rounded text-[11px] font-bold border border-cyber-border transition">
+                                    <i class="fa-solid fa-plus mr-1"></i> Add Cyberware
+                                </button>
+                            </div>
+
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-[11px]">
+                                   <thead>
+                                        <tr class="text-slate-400 border-b border-cyber-border">
+                                            <th class="py-1 px-1">Name</th>
+                                            <th class="py-1 px-1">Effect</th>
+                                            <th class="py-1 px-1 w-16">Cost (eb)</th>
+                                            <th class="py-1 px-1 w-14">Hum Loss</th>
+                                            <th class="py-1 px-1 w-8">Act</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="cyberware-tbody" class="divide-y divide-zinc-900">
+                                        <!-- Populated via JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="bg-cyber-card p-3 rounded cyber-border space-y-3">
+                            <div class="flex justify-between items-center border-b border-cyber-border pb-2">
+                                <h2 class="text-xs font-bold uppercase text-cyber-yellow tracking-wider">General Gear & Equipment</h2>
+                                <button onclick="addGearRow()" class="bg-zinc-800 hover:bg-cyber-yellow hover:text-black text-cyber-yellow px-2 py-1 rounded text-[11px] font-bold border border-cyber-border transition">
+                                    <i class="fa-solid fa-plus mr-1"></i> Add Gear
+                                </button>
+                            </div>
+
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-[11px]">
+                                    <thead>
+                                        <tr class="text-slate-400 border-b border-cyber-border">
+                                            <th class="py-1 px-1">Item Name</th>
+                                            <th class="py-1 px-1 w-20">Cost (eb)</th>
+                                            <th class="py-1 px-1 w-16 text-center" title="Monthly recurring bill">Monthly</th>
+                                            <th class="py-1 px-1 w-8">Act</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="gear-tbody" class="divide-y divide-zinc-900">
+                                        <!-- Populated via JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="section-lifepath" class="space-y-4 hidden">
+            <div class="grid grid-cols-1 xl:grid-cols-12 gap-4">
+                
+                <div class="xl:col-span-7 bg-cyber-card p-4 rounded cyber-border space-y-4">
+                    <div class="flex justify-between items-center border-b border-cyber-border pb-3">
+                        <div>
+                            <h2 class="text-sm font-bold uppercase text-cyber-yellow tracking-wider">Lifepath & Personal History</h2>
+                            <p class="text-[11px] text-slate-400">Record your style, background, family tragedy, and chronological life events.</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h3 class="text-xs font-bold uppercase text-cyber-cyan tracking-wider">Dress & Personal Style</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+                            <div>
+                                <label class="text-slate-400 block mb-1">Clothes</label>
+                                <input type="text" id="lp-clothes" value="Biker Leathers & Kevlar Vest" class="w-full bg-black border border-cyber-border rounded px-2.5 py-1.5 text-slate-200">
+                            </div>
+                            <div>
+                                <label class="text-slate-400 block mb-1">Hairstyle</label>
+                                <input type="text" id="lp-hair" value="Short, military-style cut, black" class="w-full bg-black border border-cyber-border rounded px-2.5 py-1.5 text-slate-200">
+                            </div>
+                            <div>
+                                <label class="text-slate-400 block mb-1">Affectations / Quirks</label>
+                                <input type="text" id="lp-affect" value="Dark sunglasses indoors, cybernetic optical glow" class="w-full bg-black border border-cyber-border rounded px-2.5 py-1.5 text-slate-200">
+                            </div>
+                            <div>
+                                <label class="text-slate-400 block mb-1">Ethnicity / Origin</label>
+                                <input type="text" id="lp-ethnicity" value="Anglo-American" class="w-full bg-black border border-cyber-border rounded px-2.5 py-1.5 text-slate-200">
+                            </div>
+                            <div>
+                                <label class="text-slate-400 block mb-1">Primary Language</label>
+                                <input type="text" id="lp-language" value="English / Street Slang" class="w-full bg-black border border-cyber-border rounded px-2.5 py-1.5 text-slate-200">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2 pt-3 border-t border-cyber-border">
+                        <h3 class="text-xs font-bold uppercase text-cyber-cyan tracking-wider">Family Background & Motivations</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+                            <div>
+                                <label class="text-slate-400 block mb-1">Family Ranking</label>
+                                <input type="text" id="lp-family-rank" value="Corporate Executive (Fallen)" class="w-full bg-black border border-cyber-border rounded px-2.5 py-1.5 text-slate-200">
+                            </div>
+                            <div>
+                                <label class="text-slate-400 block mb-1">Parents Status</label>
+                                <input type="text" id="lp-parents" value="Both Parents Dead in Corp War" class="w-full bg-black border border-cyber-border rounded px-2.5 py-1.5 text-slate-200">
+                            </div>
+                            <div>
+                                <label class="text-slate-400 block mb-1">Family Tragedy</label>
+                                <input type="text" id="lp-tragedy" value="Family betrayed by corporate partners, lost all assets." class="w-full bg-black border border-cyber-border rounded px-2.5 py-1.5 text-slate-200">
+                            </div>
+                            <div>
+                                <label class="text-slate-400 block mb-1">Motivation (Valued Most)</label>
+                                <input type="text" id="lp-motivation" value="Power & Revenge" class="w-full bg-black border border-cyber-border rounded px-2.5 py-1.5 text-slate-200">
+                            </div>
+                            <div>
+                                <label class="text-slate-400 block mb-1">Feelings About People</label>
+                                <input type="text" id="lp-people" value="Suspicious and distrustful of suits." class="w-full bg-black border border-cyber-border rounded px-2.5 py-1.5 text-slate-200">
+                            </div>
+                            <div>
+                                <label class="text-slate-400 block mb-1">Most Valued Possession</label>
+                                <input type="text" id="lp-possession" value="Modified Militech Arms Crusher pistol." class="w-full bg-black border border-cyber-border rounded px-2.5 py-1.5 text-slate-200">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2 pt-3 border-t border-cyber-border">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-xs font-bold uppercase text-cyber-cyan tracking-wider">Chronological Life Events</h3>
+                            <button onclick="addLifeEventRow()" class="bg-zinc-800 hover:bg-cyber-yellow hover:text-black text-cyber-yellow px-2 py-1 rounded text-xs font-bold border border-cyber-border transition">
+                                <i class="fa-solid fa-plus mr-1"></i> Add Event
+                            </button>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs">
+                                <thead>
+                                    <tr class="text-slate-400 border-b border-cyber-border">
+                                        <th class="py-2 px-2 w-16">Age / Yr</th>
+                                        <th class="py-2 px-2">Life Event Description</th>
+                                        <th class="py-2 px-2 w-16">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="lifepath-events-tbody" class="divide-y divide-zinc-900">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="xl:col-span-5 bg-cyber-card p-4 rounded cyber-border space-y-3 flex flex-col">
+                    <h2 class="text-sm font-bold uppercase text-cyber-yellow tracking-wider border-b border-cyber-border pb-2">Character Backstory & Notes</h2>
+                    <p class="text-[11px] text-slate-400">Detailed logs, contacts, fixer relationships, and active campaign notes.</p>
+                    <textarea id="lifepath-backstory" rows="18" class="w-full flex-grow bg-black border border-cyber-border rounded p-3 text-xs text-slate-200 focus:border-cyber-yellow outline-none resize-y font-mono leading-relaxed">V-Zero started as a corporate security asset for Militech before a botched extraction in the Hot Zone left him for dead. Saved by an underground ripperdoc in the Combat Zone, he traded his corporate loyalty for chrome and street justice. 
+
+Key Contacts:
+- 'Doc' Charles: Ripperdoc operating out of Little Europe.
+- Fixer 'Moxie': Provides high-paying extraction and wetwork contracts.
+- Rival: Arasaka Hit Squad commander known as 'Kuro'.</textarea>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <div id="add-skill-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-cyber-card border border-cyber-yellow rounded-lg max-w-md w-full p-5 space-y-3 shadow-2xl text-xs">
+            <h3 class="text-xs font-bold uppercase text-cyber-yellow">Add Custom or Expansion Skill</h3>
+            <p class="text-slate-400">Add any expansion skill (e.g., Skating, Bureaucracy) to your selected category.</p>
+            
+            <div class="space-y-2">
+                <div>
+                    <label class="text-slate-300 block mb-1">Skill Name</label>
+                    <input type="text" id="new-skill-name" placeholder="e.g. Skating / Skateboard" class="w-full bg-black border border-cyber-border rounded px-2.5 py-1.5 text-slate-200 focus:border-cyber-yellow outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="text-slate-300 block mb-1">Governing STAT</label>
+                        <select id="new-skill-stat" class="w-full bg-black border border-cyber-border rounded px-2.5 py-1.5 text-slate-200">
+                            <option value="SPECIAL">SPECIAL (Special Ability)</option>
+                            <option value="INT">INT</option>
+                            <option value="REF">REF</option>
+                            <option value="CL">CL (COOL)</option>
+                            <option value="TECH">TECH</option>
+                            <option value="EMP">EMP</option>
+                            <option value="ATTR">ATTR</option>
+                            <option value="LK">LK (LUCK)</option>
+                            <option value="MA">MA</option>
+                            <option value="BODY">BODY</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-slate-300 block mb-1">IP Multiplier</label>
+                        <input type="number" id="new-skill-ip" value="1" min="1" max="5" class="w-full bg-black border border-cyber-border rounded px-2.5 py-1.5 text-slate-200">
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-2 pt-2">
+                <button onclick="closeAddSkillModal()" class="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-slate-300 rounded font-bold transition">Cancel</button>
+                <button onclick="confirmAddSkill()" class="px-3 py-1.5 bg-cyber-yellow text-black hover:bg-white rounded font-bold transition">Add Skill</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-6 right-6 bg-cyber-card border border-cyber-yellow text-slate-100 font-bold px-4 py-3 rounded-lg shadow-2xl z-50 transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-3">
+        <i class="fa-solid fa-dice text-cyber-yellow text-lg"></i>
+        <div>
+            <div id="toast-title" class="text-xs text-cyber-yellow uppercase">Dice Roll Result</div>
+            <div id="toast-message" class="text-xs font-mono text-slate-200">Rolled 1d10 + 9 + 4 = 18</div>
+        </div>
+    </div>
+
+    <script>
+        let statsData = [
+            { id: 'int', name: 'INT', value: 8 },
+            { id: 'ref', name: 'REF', value: 9 },
+            { id: 'cl', name: 'CL (Cool)', value: 7 },
+            { id: 'tech', name: 'TECH', value: 6 },
+            { id: 'lk', name: 'LK (Luck)', value: 5, max: 8 },
+            { id: 'ma', name: 'MA', value: 7 },
+            { id: 'emp', name: 'EMP', value: 6, humanity: 65, maxHumanity: 80 },
+            { id: 'body', name: 'BODY', value: 7 },
+            { id: 'attr', name: 'ATTR', value: 6 }
+        ];
+
+        let skillsData = {
+            special: [
+                { name: 'Combat Sense', stat: 'REF', ip: 1, level: 6, chipped: false }
+            ],
+            attr: [
+                { name: 'Personal Grooming', stat: 'ATTR', ip: 1, level: 2, chipped: false },
+                { name: 'Seduction', stat: 'ATTR', ip: 1, level: 3, chipped: false }
+            ],
+            body: [
+                { name: 'Athletics', stat: 'REF', ip: 1, level: 4, chipped: false },
+                { name: 'Contortionist', stat: 'REF', ip: 2, level: 0, chipped: false },
+                { name: 'Endurance', stat: 'CL', ip: 1, level: 3, chipped: false },
+                { name: 'Swimming/Diving', stat: 'REF', ip: 1, level: 1, chipped: false }
+            ],
+            int: [
+                { name: 'Accounting', stat: 'INT', ip: 1, level: 0, chipped: false },
+                { name: 'Animal Handling', stat: 'INT', ip: 1, level: 0, chipped: false },
+                { name: 'Awareness/Notice', stat: 'INT', ip: 1, level: 4, chipped: false },
+                { name: 'Bureaucracy', stat: 'INT', ip: 1, level: 2, chipped: false },
+                { name: 'Composition', stat: 'INT', ip: 1, level: 2, chipped: false },
+                { name: 'Conceal/Reveal Object', stat: 'INT', ip: 1, level: 2, chipped: false },
+                { name: 'Criminology', stat: 'INT', ip: 1, level: 3, chipped: false },
+                { name: 'Cryptography', stat: 'INT', ip: 2, level: 0, chipped: false },
+                { name: 'Deduction', stat: 'INT', ip: 1, level: 4, chipped: false },
+                { name: 'Education', stat: 'INT', ip: 1, level: 5, chipped: false },
+                { name: 'Gamble', stat: 'INT', ip: 1, level: 2, chipped: false },
+                { name: 'Library Search', stat: 'INT', ip: 1, level: 3, chipped: false },
+                { name: 'Lip Reading', stat: 'INT', ip: 2, level: 0, chipped: false },
+                { name: 'Perception', stat: 'INT', ip: 1, level: 5, chipped: false },
+                { name: 'Survival', stat: 'INT', ip: 1, level: 3, chipped: false },
+                { name: 'Tactics', stat: 'INT', ip: 2, level: 2, chipped: false },
+                { name: 'Tracking', stat: 'INT', ip: 1, level: 0, chipped: false }
+            ],
+            ref: [
+                { name: 'Archery', stat: 'REF', ip: 1, level: 0, chipped: false },
+                { name: 'Brawling', stat: 'REF', ip: 1, level: 5, chipped: false },
+                { name: 'Dance', stat: 'REF', ip: 1, level: 1, chipped: false },
+                { name: 'Drive Land Vehicle', stat: 'REF', ip: 1, level: 4, chipped: false },
+                { name: 'Evasion / Dodge', stat: 'REF', ip: 2, level: 5, chipped: false },
+                { name: 'Exotic Weapons', stat: 'REF', ip: 2, level: 1, chipped: false },
+                { name: 'Handguns', stat: 'REF', ip: 1, level: 7, chipped: false },
+                { name: 'Heavy Weapons', stat: 'REF', ip: 2, level: 3, chipped: false },
+                { name: 'Karate', stat: 'REF', ip: 2, level: 6, chipped: false },
+                { name: 'Melee Weapons', stat: 'REF', ip: 1, level: 4, chipped: false },
+                { name: 'Pilot Gyro', stat: 'REF', ip: 2, level: 0, chipped: false },
+                { name: 'Pilot Jet/Plane', stat: 'REF', ip: 2, level: 0, chipped: false },
+                { name: 'Pilot Sea Vehicle', stat: 'REF', ip: 1, level: 0, chipped: false },
+                { name: 'Ride Motorcycle', stat: 'REF', ip: 1, level: 3, chipped: false },
+                { name: 'Shoulder Arms', stat: 'REF', ip: 1, level: 6, chipped: false },
+                { name: 'Sub Machinegun', stat: 'REF', ip: 1, level: 7, chipped: false },
+                { name: 'Stealth', stat: 'REF', ip: 2, level: 5, chipped: false }
+            ],
+            cool: [
+                { name: 'Acting', stat: 'CL', ip: 1, level: 1, chipped: false },
+                { name: 'Bribery', stat: 'CL', ip: 1, level: 2, chipped: false },
+                { name: 'Interrogation', stat: 'CL', ip: 1, level: 3, chipped: false },
+                { name: 'Leadership', stat: 'CL', ip: 1, level: 2, chipped: false },
+                { name: 'Persuasion', stat: 'CL', ip: 1, level: 4, chipped: false },
+                { name: 'Resist Torture/Drugs', stat: 'CL', ip: 1, level: 2, chipped: false },
+                { name: 'Streetwise', stat: 'CL', ip: 1, level: 5, chipped: false },
+                { name: 'Trading', stat: 'CL', ip: 1, level: 2, chipped: false },
+                { name: 'Wardrobe & Style', stat: 'CL', ip: 1, level: 3, chipped: false }
+            ],
+            tech: [
+                { name: 'Air Vehicle Tech', stat: 'TECH', ip: 2, level: 0, chipped: false },
+                { name: 'Basic Tech', stat: 'TECH', ip: 1, level: 3, chipped: false },
+                { name: 'Cyber Tech', stat: 'TECH', ip: 2, level: 2, chipped: false },
+                { name: 'Demolitions', stat: 'TECH', ip: 2, level: 1, chipped: false },
+                { name: 'Electronics/Security', stat: 'TECH', ip: 2, level: 3, chipped: false },
+                { name: 'First Aid', stat: 'TECH', ip: 1, level: 4, chipped: false },
+                { name: 'Forgery', stat: 'TECH', ip: 1, level: 0, chipped: false },
+                { name: 'Paramedic', stat: 'TECH', ip: 2, level: 2, chipped: false },
+                { name: 'Pick Lock', stat: 'TECH', ip: 1, level: 3, chipped: false },
+                { name: 'Pick Pocket', stat: 'TECH', ip: 1, level: 0, chipped: false },
+                { name: 'Play Instrument', stat: 'TECH', ip: 1, level: 0, chipped: false }
+            ],
+            emp: [
+                { name: 'Conversation', stat: 'EMP', ip: 1, level: 4, chipped: false },
+                { name: 'Human Perception', stat: 'EMP', ip: 1, level: 4, chipped: false }
+            ]
+        };
+
+        let hitLocationsData = [
+            { name: 'HEAD (1)', parts: [
+                { name: 'Skull', subRoll: '1-3', code: 1, layers: [14, 10, 0] },
+                { name: 'Right Eye', subRoll: '4', code: 2, layers: [18, 0, 0] },
+                { name: 'Left Eye', subRoll: '5', code: 3, layers: [18, 0, 0] },
+                { name: 'Face', subRoll: '6-8', code: 4, layers: [12, 0, 0] },
+                { name: 'Neck', subRoll: '9-10', code: 5, layers: [12, 0, 0] }
+            ]},
+            { name: 'TORSO (2-4)', parts: [
+                { name: 'Chest', subRoll: '1-5', code: 17, layers: [14, 18, 0] },
+                { name: 'Stomach', subRoll: '6-8', code: 18, layers: [14, 18, 0] },
+                { name: 'Hip', subRoll: '9-10', code: 19, layers: [14, 18, 0] }
+            ]},
+            { name: 'RIGHT ARM (6)', parts: [
+                { name: 'Shoulder', subRoll: '1-2', code: 6, layers: [14, 14, 0] },
+                { name: 'Upper Arm', subRoll: '3-5', code: 7, layers: [14, 14, 0] },
+                { name: 'Elbow', subRoll: '6', code: 8, layers: [14, 14, 0] },
+                { name: 'Forearm', subRoll: '7-9', code: 9, layers: [14, 14, 0] },
+                { name: 'Hand', subRoll: '10', code: 10, layers: [10, 0, 0] }
+            ]},
+            { name: 'LEFT ARM (5)', parts: [
+                { name: 'Shoulder', subRoll: '1-2', code: 20, layers: [14, 14, 0] },
+                { name: 'Upper Arm', subRoll: '3-5', code: 21, layers: [14, 14, 0] },
+                { name: 'Elbow', subRoll: '6', code: 22, layers: [14, 14, 0] },
+                { name: 'Forearm', subRoll: '7-9', code: 23, layers: [14, 14, 0] },
+                { name: 'Hand', subRoll: '10', code: 24, layers: [10, 0, 0] }
+            ]},
+            { name: 'LEFT LEG (7-8)', parts: [
+                { name: 'Groin', subRoll: '1', code: 25, layers: [14, 14, 0] },
+                { name: 'Hip', subRoll: '2', code: 26, layers: [14, 14, 0] },
+                { name: 'Thigh', subRoll: '3-6', code: 27, layers: [14, 14, 0] },
+                { name: 'Knee', subRoll: '7', code: 28, layers: [14, 14, 0] },
+                { name: 'Shin', subRoll: '8-9', code: 29, layers: [14, 14, 0] },
+                { name: 'Foot', subRoll: '10', code: 30, layers: [14, 0, 0] }
+            ]},
+            { name: 'RIGHT LEG (9-0)', parts: [
+                { name: 'Groin', subRoll: '1', code: 11, layers: [14, 14, 0] },
+                { name: 'Hip', subRoll: '2', code: 12, layers: [14, 14, 0] },
+                { name: 'Thigh', subRoll: '3-6', code: 13, layers: [14, 14, 0] },
+                { name: 'Knee', subRoll: '7', code: 14, layers: [14, 14, 0] },
+                { name: 'Shin', subRoll: '8-9', code: 15, layers: [14, 14, 0] },
+                { name: 'Foot', subRoll: '10', code: 16, layers: [14, 0, 0] }
+            ]}
+        ];
+
+        let weaponsData = [
+            { name: 'Militech Crusher', skill: 'Handguns', type: 'P', wa: '+1', conc: 'J', avail: 'C', dam: '4d6 (3d6+1)', ammo: 'Slug / AP', shots: '8', rof: '2', rel: 'VR', rng: '50m', misc: 0, fullAuto: false },
+            { name: 'Arasaka Minami 10', skill: 'Sub Machinegun', type: 'SMG', wa: '+1', conc: 'L', avail: 'C', dam: '2d6+3', ammo: '9mm', shots: '30', rof: '20', rel: 'ST', rng: '150m', misc: 1, fullAuto: true }
+        ];
+
+        let fightingStylesData = [
+            { name: 'Karate', strike: 2, punch: 3, kick: 4, disarm: 1, sweep: 2, block: 3, dodge: 2, grapple: 0, throw: 1, hold: 0, choke: 0, escape: 1, ram: 2 }
+        ];
+
+        let cyberwareData = [
+            { name: 'Neuralware + Speedware', effect: 'REF +1, Init Boost', cost: '1500', hum: '7' },
+            { name: 'Cyberoptic (Smartgun Link)', effect: 'Accuracy +2', cost: '2200', hum: '4' },
+            { name: 'Subdermal Kevlar', effect: 'Armour SP 14', cost: '3500', hum: '6' }
+        ];
+
+        let gearData = [
+            { name: 'Cell Phone / Comm Unit', cost: '100', monthly: true },
+            { name: 'Armoured Trenchcoat', cost: '600', monthly: false },
+            { name: 'High-Quality Apartment (Night City)', cost: '1200', monthly: true }
+        ];
+
+        let lifepathEventsData = [
+            { age: 18, event: 'Family betrayed by Arasaka-backed corporate hit. Lost all savings.' },
+            { age: 20, event: 'Spent 2 years working the Combat Zone as an enforcer.' },
+            { age: 22, event: 'Joined independent merc crew. Gained a powerful fixer contact.' }
+        ];
+
+        window.onload = function() {
+            renderStats();
+            renderSkills();
+            renderHitLocations();
+            renderWeapons();
+            renderFightingStyles();
+            renderCyberware();
+            renderGear();
+            renderLifepathEvents();
+            calculateDerivedStats();
+            recalculateWounds();
+            updateIPRemaining();
+        };
+
+        function switchTab(tabName) {
+            const sheetTab = document.getElementById('section-sheet');
+            const lpTab = document.getElementById('section-lifepath');
+            const btnSheet = document.getElementById('tab-sheet');
+            const btnLp = document.getElementById('tab-lifepath');
+
+            if (tabName === 'sheet') {
+                sheetTab.classList.remove('hidden');
+                lpTab.classList.add('hidden');
+                btnSheet.className = 'px-3 py-1 text-xs font-semibold rounded transition-all bg-cyber-yellow text-black shadow';
+                btnLp.className = 'px-3 py-1 text-xs font-semibold rounded transition-all text-slate-400 hover:text-white hover:bg-white/5';
+            } else {
+                sheetTab.classList.add('hidden');
+                lpTab.classList.remove('hidden');
+                btnLp.className = 'px-3 py-1 text-xs font-semibold rounded transition-all bg-cyber-yellow text-black shadow';
+                btnSheet.className = 'px-3 py-1 text-xs font-semibold rounded transition-all text-slate-400 hover:text-white hover:bg-white/5';
+            }
+        }
+
+        function switchRightTab(tabName) {
+            const skillsTab = document.getElementById('rtab-content-skills');
+            const combatTab = document.getElementById('rtab-content-combat');
+            const gearTab = document.getElementById('rtab-content-gear');
+            const btnSkills = document.getElementById('r-tab-skills');
+            const btnCombat = document.getElementById('r-tab-combat');
+            const btnGear = document.getElementById('r-tab-gear');
+
+            skillsTab.classList.add('hidden');
+            combatTab.classList.add('hidden');
+            gearTab.classList.add('hidden');
+            btnSkills.className = 'flex-1 py-1.5 text-xs font-bold rounded transition-all text-slate-400 hover:text-white hover:bg-white/5';
+            btnCombat.className = 'flex-1 py-1.5 text-xs font-bold rounded transition-all text-slate-400 hover:text-white hover:bg-white/5';
+            btnGear.className = 'flex-1 py-1.5 text-xs font-bold rounded transition-all text-slate-400 hover:text-white hover:bg-white/5';
+
+            if (tabName === 'skills') {
+                skillsTab.classList.remove('hidden');
+                btnSkills.className = 'flex-1 py-1.5 text-xs font-bold rounded transition-all bg-cyber-yellow text-black shadow';
+            } else if (tabName === 'combat') {
+                combatTab.classList.remove('hidden');
+                btnCombat.className = 'flex-1 py-1.5 text-xs font-bold rounded transition-all bg-cyber-yellow text-black shadow';
+            } else {
+                gearTab.classList.remove('hidden');
+                btnGear.className = 'flex-1 py-1.5 text-xs font-bold rounded transition-all bg-cyber-yellow text-black shadow';
+            }
+        }
+
+        function updateIPRemaining() {
+            const earned = parseInt(document.getElementById('ip-earned').value) || 0;
+            const spent = parseInt(document.getElementById('ip-spent').value) || 0;
+            document.getElementById('ip-remain').value = earned - spent;
+        }
+
+        function renderStats() {
+            const container = document.getElementById('stats-container');
+            container.innerHTML = '';
+            
+            const totalWounds = parseInt(document.getElementById('total-wounds-input')?.value) || 0;
+            let statMod = 0;
+            if (totalWounds >= 5 && totalWounds <= 8) statMod = -2;
+            else if (totalWounds >= 9 && totalWounds <= 12) statMod = -4;
+            else if (totalWounds >= 13) statMod = -6;
+
+            let totalHumLoss = 0;
+            cyberwareData.forEach(c => {
+                totalHumLoss += parseInt(c.hum) || 0;
+            });
+            let empObj = statsData.find(s => s.id === 'emp');
+            if (empObj) {
+                empObj.humanity = Math.max(0, empObj.maxHumanity - totalHumLoss);
+                empObj.value = Math.max(1, Math.floor(empObj.humanity / 10));
+            }
+
+            statsData.forEach((s, index) => {
+                let modifiedVal = Math.max(1, s.value + (['ref', 'int', 'cl'].includes(s.id) || totalWounds >= 9 ? statMod : (s.id === 'ref' && totalWounds >= 5 ? -2 : 0)));
+
+                if (s.id === 'lk') {
+                    container.innerHTML += `
+                        <div class="flex items-center justify-between bg-black/40 px-2 py-1 rounded border border-cyber-border">
+                            <span class="text-[11px] font-bold text-cyber-yellow w-24">${s.name}</span>
+                            <div class="flex items-center space-x-1">
+                                <input type="number" id="stat-val-${index}" value="${s.value}" min="0" max="15" oninput="updateStatValue(${index}, this.value)" class="w-9 bg-black border border-cyber-border rounded px-1 py-0.5 text-xs font-bold text-center text-white focus:border-cyber-yellow outline-none" title="Current Luck">
+                                <span class="text-slate-500">/</span>
+                                <input type="number" id="stat-max-${index}" value="${s.max}" min="1" max="15" oninput="updateStatMax(${index}, this.value)" class="w-9 bg-black border border-cyber-border rounded px-1 py-0.5 text-xs font-bold text-center text-cyan-400 outline-none" title="Max Luck">
+                                <span class="text-slate-500">=</span>
+                                <input type="text" value="${modifiedVal}" readonly class="w-8 bg-black/80 border border-cyber-border rounded px-1 py-0.5 text-xs font-bold text-center text-cyber-yellow" title="Modified Stat">
+                            </div>
+                        </div>
+                    `;
+                } else if (s.id === 'emp') {
+                    container.innerHTML += `
+                        <div class="flex items-center justify-between bg-black/40 px-2 py-1 rounded border border-cyber-border">
+                            <span class="text-[11px] font-bold text-cyber-yellow w-24" title="Derived from Humanity">${s.name} (Hum)</span>
+                            <div class="flex items-center space-x-1">
+                                <input type="number" id="stat-val-${index}" value="${s.value}" readonly class="w-8 bg-black/80 border border-cyber-border rounded px-1 py-0.5 text-xs font-bold text-center text-cyan-300" title="Calculated EMP">
+                                <span class="text-slate-500">|</span>
+                                <span class="text-[10px] text-slate-300 font-mono">${s.humanity}/${s.maxHumanity}</span>
+                                <span class="text-slate-500">=</span>
+                                <input type="text" value="${Math.max(1, s.value + (totalWounds >= 9 ? statMod : 0))}" readonly class="w-8 bg-black/80 border border-cyber-border rounded px-1 py-0.5 text-xs font-bold text-center text-cyber-yellow" title="Modified EMP">
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML += `
+                        <div class="flex items-center justify-between bg-black/40 px-2 py-1 rounded border border-cyber-border">
+                            <span class="text-[11px] font-bold text-cyber-yellow w-24">${s.name}</span>
+                            <div class="flex items-center space-x-1">
+                                <input type="number" id="stat-val-${index}" value="${s.value}" min="1" max="15" oninput="updateStatValue(${index}, this.value)" class="w-12 bg-black border border-cyber-border rounded px-1 py-0.5 text-xs font-bold text-center text-white focus:border-cyber-yellow outline-none" title="Base Stat">
+                                <span class="text-slate-500">=</span>
+                                <input type="text" value="${modifiedVal}" readonly class="w-9 bg-black/80 border border-cyber-border rounded px-1 py-0.5 text-xs font-bold text-center text-cyber-yellow" title="Wound-Modified Stat">
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        function updateStatValue(index, val) {
+            statsData[index].value = parseInt(val) || 0;
+            calculateDerivedStats();
+            renderStats();
+            renderSkills();
+        }
+
+        function updateStatMax(index, val) {
+            statsData[index].max = parseInt(val) || 0;
+        }
+
+        function calculateDerivedStats() {
+            const maVal = statsData.find(s => s.id === 'ma').value;
+            const bodyVal = statsData.find(s => s.id === 'body').value;
+            
+            const run = maVal * 3;
+            const leap = (run / 4).toFixed(2);
+            const basicLift = bodyVal * 5;
+            const maxLift = bodyVal * 20;
+
+            document.getElementById('derived-run').innerText = run;
+            document.getElementById('derived-leap').innerText = leap;
+            document.getElementById('derived-lift').innerText = `${basicLift} / ${maxLift}`;
+
+            let btm = 0;
+            if (bodyVal <= 2) btm = 0;
+            else if (bodyVal <= 4) btm = -1;
+            else if (bodyVal <= 7) btm = -2;
+            else if (bodyVal <= 9) btm = -3;
+            else if (bodyVal <= 10) btm = -4;
+            else btm = -5;
+
+            document.getElementById('derived-save').innerText = `${bodyVal} / ${btm}`;
+        }
+
+        function updateWoundTrackFromTotal(totalWounds) {
+            let count = parseInt(totalWounds) || 0;
+            const boxes = document.querySelectorAll('.wound-box');
+            boxes.forEach((box, idx) => {
+                box.checked = idx < count;
+            });
+            updateWoundPenaltyStatus(count);
+            renderStats();
+        }
+
+        function recalculateWounds() {
+            const boxes = document.querySelectorAll('.wound-box');
+            let checkedCount = 0;
+            boxes.forEach(box => {
+                if (box.checked) checkedCount++;
+            });
+            document.getElementById('total-wounds-input').value = checkedCount;
+            updateWoundPenaltyStatus(checkedCount);
+            renderStats();
+        }
+
+        function updateWoundPenaltyStatus(wounds) {
+            let statusText = "Light (-0)";
+            if (wounds >= 1 && wounds <= 4) statusText = "Light (-0)";
+            else if (wounds >= 5 && wounds <= 8) statusText = "Serious (-2 REF)";
+            else if (wounds >= 9 && wounds <= 12) statusText = "Critical (-4 All)";
+            else if (wounds >= 13 && wounds <= 16) statusText = "Mortal 0 (-6 All)";
+            else if (wounds >= 17 && wounds <= 20) statusText = "Mortal 1 (-6 All)";
+            else if (wounds >= 21) statusText = "Mortal 2+ (Comatose)";
+
+            document.getElementById('wound-status-text').value = statusText;
+        }
+
+        function rollInitiative() {
+            const refVal = statsData.find(s => s.id === 'ref').value;
+            let combatSenseLvl = 0;
+            let csFound = skillsData.special.find(s => s.name === 'Combat Sense');
+            if (csFound) combatSenseLvl = csFound.level;
+
+            const initBonus = parseInt(document.getElementById('init-bonus').value) || 0;
+            const d10 = Math.floor(Math.random() * 10) + 1;
+            const total = d10 + refVal + combatSenseLvl + initBonus;
+
+            showToast("Initiative Roll", `1d10(${d10}) + REF(${refVal}) + Combat Sense(${combatSenseLvl}) + Bonus(${initBonus}) = ${total}`);
+        }
+
+        function renderSkills() {
+            const categoryMapping = {
+                special: 'skills-special-container',
+                attr: 'skills-attr-container',
+                body: 'skills-body-container',
+                cool: 'skills-cool-container',
+                ref: 'skills-ref-container',
+                emp: 'skills-emp-container',
+                int: 'skills-int-container',
+                tech: 'skills-tech-container'
+            };
+
+            for (const [key, containerId] of Object.entries(categoryMapping)) {
+                const container = document.getElementById(containerId);
+                if (!container) continue;
+                container.innerHTML = '';
+
+                let skillList = skillsData[key] || [];
+                skillList.forEach((skill, sIdx) => {
+                    let statVal = 5;
+                    let statKeyUpper = skill.stat.toUpperCase();
+                    if (statKeyUpper === 'INT') statVal = statsData.find(s => s.id === 'int').value;
+                    else if (statKeyUpper === 'REF') statVal = statsData.find(s => s.id === 'ref').value;
+                    else if (statKeyUpper === 'CL' || statKeyUpper === 'COOL') statVal = statsData.find(s => s.id === 'cl').value;
+                    else if (statKeyUpper === 'TECH') statVal = statsData.find(s => s.id === 'tech').value;
+                    else if (statKeyUpper === 'EMP') statVal = statsData.find(s => s.id === 'emp').value;
+                    else if (statKeyUpper === 'ATTR') statVal = statsData.find(s => s.id === 'attr').value;
+                    else if (statKeyUpper === 'LK' || statKeyUpper === 'LUCK') statVal = statsData.find(s => s.id === 'lk').value;
+                    else if (statKeyUpper === 'MA') statVal = statsData.find(s => s.id === 'ma').value;
+                    else if (statKeyUpper === 'BODY') statVal = statsData.find(s => s.id === 'body').value;
+
+                    let totalVal = statVal + skill.level;
+
+                    container.innerHTML += `
+                        <div class="flex items-center justify-between py-1 border-b border-zinc-900 text-[11px] gap-1">
+                            <div class="flex items-center space-x-1.5 truncate flex-grow">
+                                <input type="checkbox" title="Chipped Skill" ${skill.chipped ? 'checked' : ''} onchange="toggleChipped('${key}', ${sIdx})" class="accent-cyan-400 h-3 w-3">
+                                <a href="#" onclick="rollSkill('${skill.name}', '${skill.stat}', ${statVal}, ${skill.level}); return false;" class="text-slate-200 hover:text-cyber-yellow underline decoration-dotted truncate" title="Click to Roll">
+                                    ${skill.name}
+                                </a>
+                            </div>
+                            
+                            <div class="flex items-center space-x-1 flex-shrink-0">
+                                <span class="text-[9px] text-slate-400 w-6 text-center" title="Stat">${statVal}</span>
+                                <span class="text-[9px] bg-zinc-900 text-cyan-400 px-1 py-0.5 rounded font-mono" title="IP Multiplier">IP:${skill.ip}</span>
+                                <input type="number" value="${skill.level}" min="0" max="15" onchange="updateSkillLevel('${key}', ${sIdx}, this.value)" class="w-8 bg-black border border-cyber-border rounded px-1 py-0.5 text-center font-bold text-cyber-yellow text-[11px]" title="Skill Level">
+                                <span class="text-[10px] text-cyber-yellow font-bold w-6 text-center" title="Total">${totalVal}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        function updateSkillLevel(category, index, val) {
+            skillsData[category][index].level = parseInt(val) || 0;
+            renderSkills();
+        }
+
+        function toggleChipped(category, index) {
+            skillsData[category][index].chipped = !skillsData[category][index].chipped;
+        }
+
+        function rollSkill(skillName, statName, statVal, skillLvl) {
+            const d10 = Math.floor(Math.random() * 10) + 1;
+            let total = d10 + statVal + skillLvl;
+            let rollDetails = `Rolled 1d10 (${d10}) + ${statName}(${statVal}) + Lvl(${skillLvl}) = ${total}`;
+            if (d10 === 10) rollDetails += " [CRITICAL SUCCESS!]";
+            if (d10 === 1) rollDetails += " [FUMBLE CHECK!]";
+
+            showToast(`Skill Check: ${skillName}`, rollDetails);
+        }
+
+        function openAddSkillModal() {
+            document.getElementById('add-skill-modal').classList.remove('hidden');
+        }
+
+        function closeAddSkillModal() {
+            document.getElementById('add-skill-modal').classList.add('hidden');
+        }
+
+        function confirmAddSkill() {
+            const name = document.getElementById('new-skill-name').value.trim();
+            const stat = document.getElementById('new-skill-stat').value;
+            const ip = parseInt(document.getElementById('new-skill-ip').value) || 1;
+            
+            let targetCategory = 'int';
+            if (stat === 'SPECIAL') targetCategory = 'special';
+            else if (stat === 'REF') targetCategory = 'ref';
+            else if (stat === 'CL') targetCategory = 'cool';
+            else if (stat === 'TECH') targetCategory = 'tech';
+            else if (stat === 'EMP') targetCategory = 'emp';
+            else if (stat === 'ATTR') targetCategory = 'attr';
+            else if (stat === 'BODY') targetCategory = 'body';
+
+            if (!name) {
+                showToast('Error', 'Please enter a valid skill name.');
+                return;
+            }
+
+            skillsData[targetCategory].push({ name, stat, ip, level: 1, chipped: false });
+            renderSkills();
+            closeAddSkillModal();
+            showToast('Skill Added', `Successfully added ${name} to ${targetCategory.toUpperCase()} skills.`);
+        }
+
+        function renderHitLocations() {
+            const container = document.getElementById('hit-locations-container');
+            container.innerHTML = '';
+
+            hitLocationsData.forEach((loc, lIdx) => {
+                let partsHtml = '';
+                loc.parts.forEach((part, pIdx) => {
+                    let sortedLayers = [...part.layers].filter(l => l > 0).sort((a, b) => b - a);
+                    let totalSP = 0;
+                    if (sortedLayers.length > 0) {
+                        totalSP = sortedLayers[0];
+                        for (let i = 1; i < sortedLayers.length; i++) {
+                            totalSP += Math.floor(sortedLayers[i] / 3);
+                        }
+                    }
+
+                    let layersInputs = '';
+                    part.layers.forEach((layerVal, layerIdx) => {
+                        layersInputs += `<input type="number" value="${layerVal}" min="0" max="50" onchange="updateArmourLayer(${lIdx}, ${pIdx}, ${layerIdx}, this.value)" class="w-8 bg-black border border-cyber-border rounded px-0.5 py-0.5 text-center font-bold text-cyan-300 text-[10px]" title="Layer ${layerIdx + 1} SP">`;
+                    });
+
+                    partsHtml += `
+                        <div class="flex items-center justify-between text-[11px] py-0.5 border-b border-zinc-900/60">
+                            <span class="text-slate-400 truncate w-24">${part.code}. ${part.name}</span>
+                            <div class="flex items-center space-x-1">
+                                ${layersInputs}
+                                <span class="text-[10px] text-cyber-yellow font-bold w-7 text-center bg-zinc-900 px-1 py-0.5 rounded" title="Layered SP Total">${totalSP}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                container.innerHTML += `
+                    <div class="bg-black/50 border border-cyber-border rounded p-2 space-y-1">
+                        <div class="flex justify-between items-center bg-zinc-900 px-2 py-1 rounded text-[11px] font-bold text-cyber-yellow">
+                            <span>${loc.name}</span>
+                            <span class="text-[9px] text-slate-400">L1 L2 L3 | SP</span>
+                        </div>
+                        <div class="space-y-1">
+                            ${partsHtml}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function updateArmourLayer(locIdx, partIdx, layerIdx, val) {
+            hitLocationsData[locIdx].parts[partIdx].layers[layerIdx] = parseInt(val) || 0;
+            renderHitLocations();
+        }
+
+        function rollHitLocation() {
+            const bodyRoll = Math.floor(Math.random() * 10) + 1;
+            const subRoll = Math.floor(Math.random() * 10) + 1;
+
+            let bodyPartObj = hitLocationsData[1];
+            if (bodyRoll === 1) bodyPartObj = hitLocationsData[0];
+            else if (bodyRoll >= 2 && bodyRoll <= 4) bodyPartObj = hitLocationsData[1];
+            else if (bodyRoll === 5) bodyPartObj = hitLocationsData[3];
+            else if (bodyRoll === 6) bodyPartObj = hitLocationsData[2];
+            else if (bodyRoll === 7 || bodyRoll === 8) bodyPartObj = hitLocationsData[4];
+            else bodyPartObj = hitLocationsData[5];
+
+            let matchedPart = bodyPartObj.parts[0];
+            for (let part of bodyPartObj.parts) {
+                let rangeParts = part.subRoll.split('-');
+                let min = parseInt(rangeParts[0]);
+                let max = rangeParts.length > 1 ? parseInt(rangeParts[1]) : min;
+                if (subRoll >= min && subRoll <= max) {
+                    matchedPart = part;
+                    break;
+                }
+            }
+
+            let fullLocationName = `${matchedPart.name} (Rolls: Main=${bodyRoll}, Sub=${subRoll})`;
+            showToast("Hit Location Roll", fullLocationName);
+        }
+
+        function renderWeapons() {
+            const tbody = document.getElementById('weapons-tbody');
+            tbody.innerHTML = '';
+            
+            let allSkillNames = [];
+            for (const cat in skillsData) {
+                skillsData[cat].forEach(s => allSkillNames.push(s.name));
+            }
+
+            weaponsData.forEach((w, index) => {
+                let skillOptions = '';
+                allSkillNames.forEach(sName => {
+                    skillOptions += `<option value="${sName}" ${w.skill === sName ? 'selected' : ''}>${sName}</option>`;
+                });
+
+                tbody.innerHTML += `
+                    <tr class="border-b border-zinc-900 hover:bg-white/5 transition">
+                        <td class="py-1 px-1"><input type="text" value="${w.name}" onchange="weaponsData[${index}].name=this.value" class="w-full bg-black border border-cyber-border rounded px-1.5 py-0.5 text-[11px] text-slate-200"></td>
+                        <td class="py-1 px-1"><select onchange="weaponsData[${index}].skill=this.value" class="bg-black text-cyber-yellow border border-cyber-border rounded px-1 py-0.5 text-[10px] w-full outline-none">${skillOptions}</select></td>
+                        <td class="py-1 px-1"><input type="text" value="${w.type}" onchange="weaponsData[${index}].type=this.value" class="w-full bg-black border border-cyber-border rounded px-1.5 py-0.5 text-[11px] text-slate-200 text-center"></td>
+                        <td class="py-1 px-1"><input type="text" value="${w.wa}" onchange="weaponsData[${index}].wa=this.value" class="w-full bg-black border border-cyber-border rounded px-1.5 py-0.5 text-[11px] text-slate-200 text-center"></td>
+                        <td class="py-1 px-1"><input type="text" value="${w.conc}" onchange="weaponsData[${index}].conc=this.value" class="w-full bg-black border border-cyber-border rounded px-1.5 py-0.5 text-[11px] text-slate-200 text-center"></td>
+                        <td class="py-1 px-1"><input type="text" value="${w.avail}" onchange="weaponsData[${index}].avail=this.value" class="w-full bg-black border border-cyber-border rounded px-1.5 py-0.5 text-[11px] text-slate-200 text-center"></td>
+                        <td class="py-1 px-1"><input type="text" value="${w.dam}" onchange="weaponsData[${index}].dam=this.value" class="w-full bg-black border border-cyber-border rounded px-1.5 py-0.5 text-[11px] text-slate-200"></td>
+                        <td class="py-1 px-1"><input type="text" value="${w.ammo}" onchange="weaponsData[${index}].ammo=this.value" class="w-full bg-black border border-cyber-border rounded px-1.5 py-0.5 text-[11px] text-slate-200"></td>
+                        <td class="py-1 px-1"><input type="text" value="${w.shots}" onchange="weaponsData[${index}].shots=this.value" class="w-full bg-black border border-cyber-border rounded px-1.5 py-0.5 text-[11px] text-slate-200 text-center"></td>
+                        <td class="py-1 px-1"><input type="text" value="${w.rof}" onchange="weaponsData[${index}].rof=this.value" class="w-full bg-black border border-cyber-border rounded px-1.5 py-0.5 text-[11px] text-slate-200 text-center"></td>
+                        <td class="py-1 px-1"><input type="text" value="${w.rel}" onchange="weaponsData[${index}].rel=this.value" class="w-full bg-black border border-cyber-border rounded px-1.5 py-0.5 text-[11px] text-slate-200 text-center"></td>
+                        <td class="py-1 px-1"><input type="text" value="${w.rng}" onchange="weaponsData[${index}].rng=this.value" class="w-full bg-black border border-cyber-border rounded px-1.5 py-0.5 text-[11px] text-slate-200 text-center"></td>
+                        <td class="py-1 px-1"><input type="number" value="${w.misc || 0}" onchange="weaponsData[${index}].misc=parseInt(this.value)||0" class="w-full bg-black border border-cyber-border rounded px-1 py-0.5 text-[11px] text-cyber-cyan font-bold text-center" title="Misc Bonus"></td>
+                        <td class="py-1 px-1 text-center"><input type="checkbox" ${w.fullAuto ? 'checked' : ''} onchange="weaponsData[${index}].fullAuto=this.checked" class="accent-cyber-yellow h-3.5 w-3.5" title="Toggle Full Auto"></td>
+                        <td class="py-1 px-1 text-center">
+                            <button onclick="rollWeaponAttack(${index})" class="bg-cyber-yellow text-black hover:bg-white px-2 py-0.5 rounded font-bold text-[10px]">
+                                Roll
+                            </button>
+                        </td>
+                        <td class="py-1 px-1 text-center"><button onclick="removeWeapon(${index})" class="text-red-400 hover:text-red-300"><i class="fa-solid fa-trash"></i></button></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function rollWeaponAttack(index) {
+            const w = weaponsData[index];
+            const refVal = statsData.find(s => s.id === 'ref').value;
+            
+            let skillLvl = 0;
+            for (const cat in skillsData) {
+                let found = skillsData[cat].find(s => s.name === w.skill);
+                if (found) {
+                    skillLvl = found.level;
+                    break;
+                }
+            }
+
+            let waNum = parseInt(w.wa) || 0;
+            let miscNum = parseInt(w.misc) || 0;
+            const rangeSelectVal = document.getElementById('combat-range-select').value;
+            let rangeMod = 0;
+            if (rangeSelectVal === 'medium') rangeMod = -2;
+            else if (rangeSelectVal === 'long') rangeMod = -4;
+            else if (rangeSelectVal === 'extreme') rangeMod = -6;
+
+            let autoBonus = 0;
+            let rofNum = parseInt(w.rof) || 1;
+            if (w.fullAuto) {
+                autoBonus = Math.floor(rofNum / 10) + (rangeSelectVal === 'close' ? 2 : 0);
+            }
+
+            const d10 = Math.floor(Math.random() * 10) + 1;
+            let total = d10 + refVal + skillLvl + waNum + rangeMod + autoBonus + miscNum;
+
+            let details = `1d10(${d10}) + REF(${refVal}) + ${w.skill}(${skillLvl}) + WA(${waNum}) + Range(${rangeMod})${w.fullAuto ? ' + Auto(' + autoBonus + ')' : ''}${miscNum !== 0 ? ' + Misc(' + miscNum + ')' : ''} = ${total}`;
+            showToast(`Attack: ${w.name}`, details);
+        }
+
+        function addWeaponRow() {
+            weaponsData.push({ name: 'New Weapon', skill: 'Handguns', type: 'P', wa: '+1', conc: 'J', avail: 'C', dam: '2d6', ammo: '9mm', shots: '12', rof: '2', rel: 'VR', rng: '50m', misc: 0, fullAuto: false });
+            renderWeapons();
+        }
+
+        function removeWeapon(index) {
+            weaponsData.splice(index, 1);
+            renderWeapons();
+        }
+
+        function renderFightingStyles() {
+            const tbody = document.getElementById('fighting-styles-tbody');
+            tbody.innerHTML = '';
+
+            let allSkillNames = [];
+            for (const cat in skillsData) {
+                skillsData[cat].forEach(s => allSkillNames.push(s.name));
+            }
+
+            fightingStylesData.forEach((fs, index) => {
+                let skillOptions = '';
+                allSkillNames.forEach(sName => {
+                    skillOptions += `<option value="${sName}" ${fs.name === sName ? 'selected' : ''}>${sName}</option>`;
+                });
+
+                let maneuvers = ['strike', 'punch', 'kick', 'disarm', 'sweep', 'block', 'dodge', 'grapple', 'throw', 'hold', 'choke', 'escape', 'ram'];
+                let maneuverCells = '';
+                maneuvers.forEach(m => {
+                    maneuverCells += `
+                        <td class="py-1 px-0.5">
+                            <input type="number" value="${fs[m]}" onchange="fightingStylesData[${index}].${m}=parseInt(this.value)||0" class="w-8 bg-black border border-cyber-border rounded px-0.5 py-0.5 text-center text-cyan-300 font-bold text-[10px]" title="Edit ${m}">
+                            <button onclick="rollManeuver('${fs.name}', '${m}', ${fs[m]})" class="block mx-auto mt-0.5 text-[9px] bg-zinc-800 hover:bg-cyber-yellow hover:text-black text-slate-200 px-1 rounded transition">🎲</button>
+                        </td>
+                    `;
+                });
+
+                tbody.innerHTML += `
+                    <tr class="border-b border-zinc-900 hover:bg-white/5 transition text-left">
+                        <td class="py-1 px-1"><select onchange="fightingStylesData[${index}].name=this.value" class="bg-black text-cyber-yellow border border-cyber-border rounded px-1 py-0.5 text-[11px] w-full outline-none font-bold">${skillOptions}</select></td>
+                        ${maneuverCells}
+                        <td class="py-1 px-0.5 text-center"><button onclick="removeFightingStyle(${index})" class="text-red-400 hover:text-red-300"><i class="fa-solid fa-trash"></i></button></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function rollManeuver(styleName, maneuverName, maneuverMod) {
+            const refVal = statsData.find(s => s.id === 'ref').value;
+            let skillLvl = 0;
+            for (const cat in skillsData) {
+                let found = skillsData[cat].find(s => s.name === styleName);
+                if (found) {
+                    skillLvl = found.level;
+                    break;
+                }
+            }
+            const d10 = Math.floor(Math.random() * 10) + 1;
+            let total = d10 + refVal + skillLvl + maneuverMod;
+            showToast(`${styleName}: ${maneuverName.toUpperCase()}`, `1d10(${d10}) + REF(${refVal}) + Lvl(${skillLvl}) + Mod(${maneuverMod}) = ${total}`);
+        }
+
+        function addFightingStyleRow() {
+            fightingStylesData.push({ name: 'Karate', strike: 2, punch: 3, kick: 4, disarm: 1, sweep: 2, block: 3, dodge: 2, grapple: 0, throw: 1, hold: 0, choke: 0, escape: 1, ram: 2 });
+            renderFightingStyles();
+        }
+
+        function removeFightingStyle(index) {
+            fightingStylesData.splice(index, 1);
+            renderFightingStyles();
+        }
+
+        function renderCyberware() {
+            const tbody = document.getElementById('cyberware-tbody');
+            tbody.innerHTML = '';
+            cyberwareData.forEach((c, index) => {
+                tbody.innerHTML += `
+                    <tr class="border-b border-zinc-900 hover:bg-white/5 transition">
+                        <td class="py-1 px-1"><input type="text" value="${c.name}" onchange="cyberwareData[${index}].name=this.value" class="w-full bg-black border border-cyber-border rounded px-1.5 py-0.5 text-[11px] text-slate-200"></td>
+                        <td class="py-1 px-1"><input type="text" value="${c.effect}" onchange="cyberwareData[${index}].effect=this.value" class="w-full bg-black border border-cyber-border rounded px-1.5 py-0.5 text-[11px] text-slate-200"></td>
+                        <td class="py-1 px-1"><input type="text" value="${c.cost}" onchange="cyberwareData[${index}].cost=this.value" class="w-full bg-black border border-cyber-border rounded px-1.5 py-0.5 text-[11px] text-slate-200"></td>
+                        <td class="py-1 px-1"><input type="number" value="${c.hum}" onchange="cyberwareData[${index}].hum=this.value; renderStats();" class="w-full bg-black border border-cyber-border rounded px-1.5 py-0.5 text-[11px] text-slate-200 text-center font-bold text-red-400"></td>
+                        <td class="py-1 px-1 text-center"><button onclick="removeCyberware(${index})" class="text-red-400 hover:text-red-300"><i class="fa-solid fa-trash"></i></button></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function addCyberwareRow() {
+            cyberwareData.push({ name: 'New Cyberware', effect: 'REF +0', cost: '1000', hum: '2' });
+            renderCyberware();
+            renderStats();
+        }
+
+        function removeCyberware(index) {
+            cyberwareData.splice(index, 1);
+            renderCyberware();
+            renderStats();
+        }
+
+        function renderGear() {
+            const tbody = document.getElementById('gear-tbody');
+            tbody.innerHTML = '';
+            gearData.forEach((g, index) => {
+                tbody.innerHTML += `
+                    <tr class="border-b border-zinc-900 hover:bg-white/5 transition">
+                        <td class="py-1 px-1"><input type="text" value="${g.name}" class="w-full bg-black border border-cyber-border rounded px-1.5 py-0.5 text-[11px] text-slate-200"></td>
+                        <td class="py-1 px-1"><input type="text" value="${g.cost}" class="w-full bg-black border border-cyber-border rounded px-1.5 py-0.5 text-[11px] text-slate-200"></td>
+                        <td class="py-1 px-1 text-center"><input type="checkbox" ${g.monthly ? 'checked' : ''} onchange="toggleGearMonthly(${index})" class="accent-cyber-yellow h-3.5 w-3.5"></td>
+                        <td class="py-1 px-1 text-center"><button onclick="removeGear(${index})" class="text-red-400 hover:text-red-300"><i class="fa-solid fa-trash"></i></button></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function addGearRow() {
+            gearData.push({ name: 'New Equipment', cost: '150', monthly: false });
+            renderGear();
+        }
+
+        function removeGear(index) {
+            gearData.splice(index, 1);
+            renderGear();
+        }
+
+        function toggleGearMonthly(index) {
+            gearData[index].monthly = !gearData[index].monthly;
+        }
+
+        function renderLifepathEvents() {
+            const tbody = document.getElementById('lifepath-events-tbody');
+            tbody.innerHTML = '';
+            lifepathEventsData.forEach((e, index) => {
+                tbody.innerHTML += `
+                    <tr class="border-b border-zinc-900 hover:bg-white/5 transition">
+                        <td class="py-2 px-2"><input type="number" value="${e.age}" class="w-full bg-black border border-cyber-border rounded px-2 py-1 text-xs text-cyber-yellow text-center font-bold"></td>
+                        <td class="py-2 px-2"><input type="text" value="${e.event}" class="w-full bg-black border border-cyber-border rounded px-2 py-1 text-xs text-slate-200"></td>
+                        <td class="py-2 px-2 text-center"><button onclick="removeLifeEvent(${index})" class="text-red-400 hover:text-red-300"><i class="fa-solid fa-trash"></i></button></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function addLifeEventRow() {
+            lifepathEventsData.push({ age: 23, event: 'New event occurred in the streets of Night City.' });
+            renderLifepathEvents();
+        }
+
+        function removeLifeEvent(index) {
+            lifepathEventsData.splice(index, 1);
+            renderLifepathEvents();
+        }
+
+        function saveCharacter() {
+            showToast('Data Saved', 'Character sheet state cached successfully.');
+        }
+
+        function resetCharacter() {
+            if (confirm('Are you sure you want to reset this sheet prototype?')) {
+                showToast('Sheet Reset', 'Character sheet reverted to default.');
+            }
+        }
+
+        function showToast(title, msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-title').innerText = title;
+            document.getElementById('toast-message').innerText = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3500);
+        }
+    </script>
+</body>
+</html>
