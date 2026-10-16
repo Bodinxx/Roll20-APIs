@@ -47,7 +47,7 @@
             <div class="sheet-stat-row"><button type="roll" value="&{template:cyber} {{name=LUCK}} {{character=@{Handle}}} {{result=[[1d10!! + @{Luck} + ?{Modifier|0}]]}}">LUCK</button><input type="number" name="attr_Luck_Base" value="0" title="Base"><input type="number" name="attr_Luck_Temp" value="0" title="Temporary modifier"><input type="number" name="attr_Luck" value="0" readonly title="Current"></div>
             <div class="sheet-stat-row"><button type="roll" value="&{template:cyber} {{name=MA}} {{character=@{Handle}}} {{result=[[1d10!! + @{Ma} + ?{Modifier|0}]]}}">MA</button><input type="number" name="attr_Ma_Base" value="0" title="Base"><input type="number" name="attr_Ma_Temp" value="0" title="Temporary modifier"><input type="number" name="attr_Ma" value="0" readonly title="Current"></div>
             <div class="sheet-stat-row"><button type="roll" value="&{template:cyber} {{name=BODY}} {{character=@{Handle}}} {{result=[[1d10!! + @{Body} + ?{Modifier|0}]]}}">BODY</button><input type="number" name="attr_Body_Base" value="0" title="Base"><input type="number" name="attr_Body_Temp" value="0" title="Temporary modifier"><input type="number" name="attr_Body" value="0" readonly title="Current"></div>
-            <div class="sheet-stat-row sheet-stat-empathy"><button type="roll" value="&{template:cyber} {{name=EMP}} {{character=@{Handle}}} {{result=[[1d10!! + @{Emp} + ?{Modifier|0}]]}}">EMP</button><label>Base<input type="number" name="attr_Emp_Base" value="0" min="0" title="Base Empathy"></label><label>Modified<input type="number" name="attr_Emp" value="0" readonly title="Empathy after Humanity Loss"></label></div>
+            <div class="sheet-stat-row sheet-stat-empathy"><button type="roll" value="&{template:cyber} {{name=EMP}} {{character=@{Handle}}} {{result=[[1d10!! + @{Emp} + ?{Modifier|0}]]}}">EMP</button><label>Base<input type="number" name="attr_Emp_Base" min="0" title="Base Empathy"></label><label>Modified<input type="number" name="attr_Emp" value="0" readonly title="Empathy after Humanity Loss"></label></div>
           </div>
           <div class="sheet-derived">
             <label>Current Humanity<input type="number" name="attr_Humanity_Current" value="0" readonly></label>
@@ -236,10 +236,11 @@ const statAttrs = ["Int", "Ref", "Tech", "Cool", "Attr", "Luck", "Ma", "Body"];
 function updateSheet() {
   getSectionIDs("repeating_cyberware", sectionIds => {
     const cyberwareAttrs = sectionIds.map(id => `repeating_cyberware_${id}_Cyberware_Humanity_Loss`);
-    getAttrs(["Total_Wounds", ...statAttrs.flatMap(stat => [`${stat}_Base`, `${stat}_Temp`]), "Emp_Base", "IP_Earned", "IP_Spent", ...cyberwareAttrs], values => {
+    getAttrs(["Total_Wounds", ...statAttrs.flatMap(stat => [`${stat}_Base`, `${stat}_Temp`]), "Emp_Base", "Humanity", "IP_Earned", "IP_Spent", ...cyberwareAttrs], values => {
     const humanityLoss = cyberwareAttrs.reduce((total, attr) => total + Number(values[attr] || 0), 0);
     const wounds = Math.min(40, Math.max(0, Math.floor(Number(values.Total_Wounds) || 0)));
-    const empathyBase = Number(values.Emp_Base) || 0;
+    const hasEmpathyBase = values.Emp_Base !== "" && values.Emp_Base != null;
+    const empathyBase = Number(hasEmpathyBase ? values.Emp_Base : Number(values.Humanity || 0) / 10) || 0;
     let woundMod = 0;
     let status = "Light (-0)";
     if (wounds >= 5 && wounds <= 8) {
@@ -263,6 +264,7 @@ function updateSheet() {
       Wound_Modifier: woundMod,
       Wound_Status: status,
       Humanity_Loss: humanityLoss,
+      Emp_Base: empathyBase,
       Humanity_Current: Math.max(0, empathyBase * 10 - humanityLoss),
       IP_Remaining: Number(values.IP_Earned || 0) - Number(values.IP_Spent || 0)
     };
