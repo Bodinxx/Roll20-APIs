@@ -34,7 +34,6 @@
             <b>INITIATIVE</b><label>Bonus<input type="number" name="attr_Init_Bonus" value="0"></label>
             <button type="roll" value="&{template:cyber} {{name=Initiative}} {{character=@{Handle}}} {{result=[[1d10!! + @{Ref} + @{Combat_Sense} + @{Init_Bonus} + ?{Modifier|0} &{tracker}]]}}">Roll Init</button>
           </div>
-          <label class="sheet-wide">Notes / Background<textarea name="attr_Notes" rows="3"></textarea></label>
         </div>
 
         <div class="sheet-card">
@@ -48,12 +47,10 @@
             <div class="sheet-stat-row"><button type="roll" value="&{template:cyber} {{name=LUCK}} {{character=@{Handle}}} {{result=[[1d10!! + @{Luck} + ?{Modifier|0}]]}}">LUCK</button><input type="number" name="attr_Luck_Base" value="0" title="Base"><input type="number" name="attr_Luck_Temp" value="0" title="Temporary modifier"><input type="number" name="attr_Luck" value="0" readonly title="Current"></div>
             <div class="sheet-stat-row"><button type="roll" value="&{template:cyber} {{name=MA}} {{character=@{Handle}}} {{result=[[1d10!! + @{Ma} + ?{Modifier|0}]]}}">MA</button><input type="number" name="attr_Ma_Base" value="0" title="Base"><input type="number" name="attr_Ma_Temp" value="0" title="Temporary modifier"><input type="number" name="attr_Ma" value="0" readonly title="Current"></div>
             <div class="sheet-stat-row"><button type="roll" value="&{template:cyber} {{name=BODY}} {{character=@{Handle}}} {{result=[[1d10!! + @{Body} + ?{Modifier|0}]]}}">BODY</button><input type="number" name="attr_Body_Base" value="0" title="Base"><input type="number" name="attr_Body_Temp" value="0" title="Temporary modifier"><input type="number" name="attr_Body" value="0" readonly title="Current"></div>
-            <div class="sheet-stat-row"><button type="roll" value="&{template:cyber} {{name=EMP}} {{character=@{Handle}}} {{result=[[1d10!! + @{Emp} + ?{Modifier|0}]]}}">HUM / EMP</button><input type="number" name="attr_Humanity" value="0" title="Humanity before cyberware loss"><input type="number" name="attr_Emp" value="0" readonly title="Current EMP"></div>
+            <div class="sheet-stat-row sheet-stat-empathy"><button type="roll" value="&{template:cyber} {{name=EMP}} {{character=@{Handle}}} {{result=[[1d10!! + @{Emp} + ?{Modifier|0}]]}}">EMP</button><label>Base<input type="number" name="attr_Emp_Base" min="0" title="Base Empathy"></label><label>Modified<input type="number" name="attr_Emp" value="0" readonly title="Empathy after Humanity Loss"></label></div>
           </div>
           <div class="sheet-derived">
-            <label>RUN<input type="number" name="attr_Run" value="0" readonly></label>
-            <label>LEAP<input type="number" name="attr_Leap" value="0" readonly></label>
-            <label>LIFT<input type="number" name="attr_Lift" value="0" readonly></label>
+            <label>Current Humanity<input type="number" name="attr_Humanity_Current" value="0" readonly></label>
             <label>MAX LIFT<input type="number" name="attr_Max_Lift" value="0" readonly></label>
             <label>SAVE<input type="number" name="attr_Save" value="0" readonly></label>
             <label>BTM<input type="number" name="attr_Btm" value="0" readonly></label>
@@ -61,21 +58,30 @@
         </div>
 
         <div class="sheet-card sheet-wounds">
-          <div class="sheet-card-heading"><h2>Health & Wound Track</h2><label>Total Wounds<input type="number" name="attr_Total_Wounds" value="0" readonly></label></div>
+          <div class="sheet-card-heading"><h2>Health & Wound Track</h2><label>Total Wounds<input type="number" name="attr_Total_Wounds" value="0" min="0" max="40" step="1"></label></div>
           <input type="text" class="sheet-wound-status" name="attr_Wound_Status" value="Light (-0)" readonly>
           <div class="sheet-wound-grid">
-            <label>LIGHT <span>STUN 0</span><input type="checkbox" name="attr_Wound_1" value="1"><input type="checkbox" name="attr_Wound_2" value="1"><input type="checkbox" name="attr_Wound_3" value="1"><input type="checkbox" name="attr_Wound_4" value="1"></label>
-            <label>SERIOUS <span>STUN 1</span><input type="checkbox" name="attr_Wound_5" value="1"><input type="checkbox" name="attr_Wound_6" value="1"><input type="checkbox" name="attr_Wound_7" value="1"><input type="checkbox" name="attr_Wound_8" value="1"></label>
-            <label>CRITICAL <span>STUN 2</span><input type="checkbox" name="attr_Wound_9" value="1"><input type="checkbox" name="attr_Wound_10" value="1"><input type="checkbox" name="attr_Wound_11" value="1"><input type="checkbox" name="attr_Wound_12" value="1"></label>
-            <label>MORTAL 0 <span>STUN 3</span><input type="checkbox" name="attr_Wound_13" value="1"><input type="checkbox" name="attr_Wound_14" value="1"><input type="checkbox" name="attr_Wound_15" value="1"><input type="checkbox" name="attr_Wound_16" value="1"></label>
-            <label>MORTAL 1 <span>STUN 4</span><input type="checkbox" name="attr_Wound_17" value="1"><input type="checkbox" name="attr_Wound_18" value="1"><input type="checkbox" name="attr_Wound_19" value="1"><input type="checkbox" name="attr_Wound_20" value="1"></label>
-            <label>MORTAL 2+ <span>STUN 5+</span><input type="checkbox" name="attr_Wound_21" value="1"><input type="checkbox" name="attr_Wound_22" value="1"><input type="checkbox" name="attr_Wound_23" value="1"><input type="checkbox" name="attr_Wound_24" value="1"></label>
+            <div>LIGHT <span>STUN 0</span><input type="checkbox" name="attr_Wound_1" value="1" disabled aria-label="Wound 1"><input type="checkbox" name="attr_Wound_2" value="1" disabled aria-label="Wound 2"><input type="checkbox" name="attr_Wound_3" value="1" disabled aria-label="Wound 3"><input type="checkbox" name="attr_Wound_4" value="1" disabled aria-label="Wound 4"></div>
+            <div>SERIOUS <span>STUN 1</span><input type="checkbox" name="attr_Wound_5" value="1" disabled aria-label="Wound 5"><input type="checkbox" name="attr_Wound_6" value="1" disabled aria-label="Wound 6"><input type="checkbox" name="attr_Wound_7" value="1" disabled aria-label="Wound 7"><input type="checkbox" name="attr_Wound_8" value="1" disabled aria-label="Wound 8"></div>
+            <div>CRITICAL <span>STUN 2</span><input type="checkbox" name="attr_Wound_9" value="1" disabled aria-label="Wound 9"><input type="checkbox" name="attr_Wound_10" value="1" disabled aria-label="Wound 10"><input type="checkbox" name="attr_Wound_11" value="1" disabled aria-label="Wound 11"><input type="checkbox" name="attr_Wound_12" value="1" disabled aria-label="Wound 12"></div>
+            <div>MORTAL 0 <span>STUN 3</span><input type="checkbox" name="attr_Wound_13" value="1" disabled aria-label="Wound 13"><input type="checkbox" name="attr_Wound_14" value="1" disabled aria-label="Wound 14"><input type="checkbox" name="attr_Wound_15" value="1" disabled aria-label="Wound 15"><input type="checkbox" name="attr_Wound_16" value="1" disabled aria-label="Wound 16"></div>
+            <div>MORTAL 1 <span>STUN 4</span><input type="checkbox" name="attr_Wound_17" value="1" disabled aria-label="Wound 17"><input type="checkbox" name="attr_Wound_18" value="1" disabled aria-label="Wound 18"><input type="checkbox" name="attr_Wound_19" value="1" disabled aria-label="Wound 19"><input type="checkbox" name="attr_Wound_20" value="1" disabled aria-label="Wound 20"></div>
+            <div>MORTAL 2 <span>STUN 5</span><input type="checkbox" name="attr_Wound_21" value="1" disabled aria-label="Wound 21"><input type="checkbox" name="attr_Wound_22" value="1" disabled aria-label="Wound 22"><input type="checkbox" name="attr_Wound_23" value="1" disabled aria-label="Wound 23"><input type="checkbox" name="attr_Wound_24" value="1" disabled aria-label="Wound 24"></div>
+            <div>MORTAL 3 <span>STUN 6</span><input type="checkbox" name="attr_Wound_25" value="1" disabled aria-label="Wound 25"><input type="checkbox" name="attr_Wound_26" value="1" disabled aria-label="Wound 26"><input type="checkbox" name="attr_Wound_27" value="1" disabled aria-label="Wound 27"><input type="checkbox" name="attr_Wound_28" value="1" disabled aria-label="Wound 28"></div>
+            <div>MORTAL 4 <span>STUN 7</span><input type="checkbox" name="attr_Wound_29" value="1" disabled aria-label="Wound 29"><input type="checkbox" name="attr_Wound_30" value="1" disabled aria-label="Wound 30"><input type="checkbox" name="attr_Wound_31" value="1" disabled aria-label="Wound 31"><input type="checkbox" name="attr_Wound_32" value="1" disabled aria-label="Wound 32"></div>
+            <div>MORTAL 5 <span>STUN 8</span><input type="checkbox" name="attr_Wound_33" value="1" disabled aria-label="Wound 33"><input type="checkbox" name="attr_Wound_34" value="1" disabled aria-label="Wound 34"><input type="checkbox" name="attr_Wound_35" value="1" disabled aria-label="Wound 35"><input type="checkbox" name="attr_Wound_36" value="1" disabled aria-label="Wound 36"></div>
+            <div>MORTAL 6 <span>STUN 9</span><input type="checkbox" name="attr_Wound_37" value="1" disabled aria-label="Wound 37"><input type="checkbox" name="attr_Wound_38" value="1" disabled aria-label="Wound 38"><input type="checkbox" name="attr_Wound_39" value="1" disabled aria-label="Wound 39"><input type="checkbox" name="attr_Wound_40" value="1" disabled aria-label="Wound 40"></div>
           </div>
         </div>
       </div>
       <aside class="sheet-column">
         <div class="sheet-card">
           <h2>Movement & Initiative</h2>
+          <div class="sheet-derived">
+            <label>RUN<input type="number" name="attr_Run" value="0" readonly></label>
+            <label>LEAP<input type="number" name="attr_Leap" value="0" readonly></label>
+            <label>LIFT<input type="number" name="attr_Lift" value="0" readonly></label>
+          </div>
           <p class="sheet-help">Roll checks from the Skills tab. Initiative includes REF, Combat Sense, and your bonus.</p>
           <button type="roll" class="sheet-action" value="&{template:cyber} {{name=Initiative}} {{character=@{Handle}}} {{result=[[1d10!! + @{Ref} + @{Combat_Sense} + @{Init_Bonus} + ?{Modifier|0} &{tracker}]]}}">Roll Initiative</button>
           <label>Wound modifier<input type="number" name="attr_Wound_Modifier" value="0" readonly></label>
@@ -224,15 +230,17 @@
 </rolltemplate>
 
 <script type="text/worker">
-const woundAttrs = Array.from({ length: 24 }, (_, index) => `Wound_${index + 1}`);
+const woundAttrs = Array.from({ length: 40 }, (_, index) => `Wound_${index + 1}`);
 const statAttrs = ["Int", "Ref", "Tech", "Cool", "Attr", "Luck", "Ma", "Body"];
 
 function updateSheet() {
   getSectionIDs("repeating_cyberware", sectionIds => {
     const cyberwareAttrs = sectionIds.map(id => `repeating_cyberware_${id}_Cyberware_Humanity_Loss`);
-    getAttrs([...woundAttrs, ...statAttrs.flatMap(stat => [`${stat}_Base`, `${stat}_Temp`]), "Humanity", "IP_Earned", "IP_Spent", ...cyberwareAttrs], values => {
+    getAttrs(["Total_Wounds", ...statAttrs.flatMap(stat => [`${stat}_Base`, `${stat}_Temp`]), "Emp_Base", "Humanity", "IP_Earned", "IP_Spent", ...cyberwareAttrs], values => {
     const humanityLoss = cyberwareAttrs.reduce((total, attr) => total + Number(values[attr] || 0), 0);
-    const wounds = woundAttrs.reduce((total, attr) => total + (values[attr] === "1" ? 1 : 0), 0);
+    const wounds = Math.min(40, Math.max(0, Math.floor(Number(values.Total_Wounds) || 0)));
+    const hasEmpathyBase = values.Emp_Base !== "" && values.Emp_Base != null;
+    const empathyBase = Number(hasEmpathyBase ? values.Emp_Base : Number(values.Humanity || 0) / 10) || 0;
     let woundMod = 0;
     let status = "Light (-0)";
     if (wounds >= 5 && wounds <= 8) {
@@ -249,29 +257,33 @@ function updateSheet() {
       status = "Mortal 1 (-6 All)";
     } else if (wounds >= 21) {
       woundMod = -6;
-      status = "Mortal 2+ (Comatose)";
+      status = `Mortal ${Math.ceil(wounds / 4) - 4} (Comatose)`;
     }
     const attrs = {
       Total_Wounds: wounds,
       Wound_Modifier: woundMod,
       Wound_Status: status,
       Humanity_Loss: humanityLoss,
-      Humanity_Current: Math.max(0, Number(values.Humanity || 0) - humanityLoss),
+      Emp_Base: empathyBase,
+      Humanity_Current: Math.max(0, empathyBase * 10 - humanityLoss),
       IP_Remaining: Number(values.IP_Earned || 0) - Number(values.IP_Spent || 0)
     };
+    woundAttrs.forEach((attr, index) => {
+      attrs[attr] = index < wounds ? "1" : "0";
+    });
     statAttrs.forEach(stat => {
       const base = Number(values[`${stat}_Base`] || 0) + Number(values[`${stat}_Temp`] || 0);
       const penalty = (stat === "Ref" && wounds >= 5) || (wounds >= 9 && ["Int", "Tech", "Cool", "Attr", "Luck", "Ma", "Body", "Ref"].includes(stat)) ? woundMod : 0;
       attrs[stat] = Math.max(0, base + penalty);
     });
-    attrs.Emp = Math.max(0, Math.floor(attrs.Humanity_Current / 10) + (wounds >= 9 ? woundMod : 0));
+    attrs.Emp = Math.max(0, empathyBase - Math.floor(humanityLoss / 10));
     attrs.Run = attrs.Ma * 3;
     attrs.Leap = attrs.Run / 4;
     attrs.Lift = attrs.Body * 5;
     attrs.Max_Lift = attrs.Body * 20;
     attrs.Save = attrs.Body;
     attrs.Btm = attrs.Body <= 2 ? 0 : attrs.Body <= 4 ? -1 : attrs.Body <= 7 ? -2 : attrs.Body <= 9 ? -3 : attrs.Body <= 10 ? -4 : -5;
-    setAttrs(attrs);
+    setAttrs(attrs, { silent: true });
   });
   });
 }
@@ -289,6 +301,6 @@ function updateArmorTotals() {
   });
 }
 
-on("sheet:opened change:Wound_1 change:Wound_2 change:Wound_3 change:Wound_4 change:Wound_5 change:Wound_6 change:Wound_7 change:Wound_8 change:Wound_9 change:Wound_10 change:Wound_11 change:Wound_12 change:Wound_13 change:Wound_14 change:Wound_15 change:Wound_16 change:Wound_17 change:Wound_18 change:Wound_19 change:Wound_20 change:Wound_21 change:Wound_22 change:Wound_23 change:Wound_24 change:Int_Base change:Int_Temp change:Ref_Base change:Ref_Temp change:Tech_Base change:Tech_Temp change:Cool_Base change:Cool_Temp change:Attr_Base change:Attr_Temp change:Luck_Base change:Luck_Temp change:Ma_Base change:Ma_Temp change:Body_Base change:Body_Temp change:Humanity change:IP_Earned change:IP_Spent change:repeating_cyberware:Cyberware_Humanity_Loss change:repeating_cyberware", updateSheet);
+on("sheet:opened change:Total_Wounds change:Int_Base change:Int_Temp change:Ref_Base change:Ref_Temp change:Tech_Base change:Tech_Temp change:Cool_Base change:Cool_Temp change:Attr_Base change:Attr_Temp change:Luck_Base change:Luck_Temp change:Ma_Base change:Ma_Temp change:Body_Base change:Body_Temp change:Emp_Base change:IP_Earned change:IP_Spent change:repeating_cyberware:Cyberware_Humanity_Loss change:repeating_cyberware remove:repeating_cyberware", updateSheet);
 on("sheet:opened change:repeating_armor change:repeating_armor:Armor_Layer_1 change:repeating_armor:Armor_Layer_2 change:repeating_armor:Armor_Layer_3", updateArmorTotals);
 </script>
